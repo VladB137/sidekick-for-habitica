@@ -1,6 +1,6 @@
 {
   "name": "sidekick-for-habitica",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A crit planner for Habitica: predicts and plans critical hits for every class.",
   "license": "GPL-3.0-only",

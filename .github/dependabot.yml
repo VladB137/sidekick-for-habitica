@@ -9,3 +9,7 @@ updates:
     schedule: { interval: monthly }
     open-pull-requests-limit: 5
     groups: { npm: { patterns: ['*'] } }
+    # a major version (TypeScript, Vite, ESLint) can change what the old Android 9 WebViews get: taken on purpose, one at a time
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
