@@ -76,6 +76,11 @@
     "@capacitor/core": "^8.5.3",
     "@fontsource/nunito": "^5.3.0"
   },
+  "overrides": {
+    "xcode": {
+      "uuid": "$uuid"
+    }
+  },
   "browserslist": [
     "chrome >= 66"
   ]
