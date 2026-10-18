@@ -77,8 +77,10 @@ jobs:
           OUT="sidekick-for-habitica-$VERSION.apk"
           cp "$APK" "$OUT"
           "$TOOLS/apksigner" verify --print-certs "$OUT" > certs.txt
-          CERT=$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' certs.txt)
-          [ -n "$CERT" ] || { echo "::error::the APK isn't signed"; exit 1; }
+          # apksigner up to 36 prints "Signer #1 certificate SHA-256 digest: …", 37 prints "V2 Signer: certificate SHA-256 digest: …"
+          CERT=$(grep -oE 'certificate SHA-256 digest: [0-9a-f]{64}' certs.txt | sed 's/.* //' | sort -u)
+          [ -n "$CERT" ] || { cat certs.txt; echo "::error::the APK isn't signed"; exit 1; }
+          [ "$(wc -l <<<"$CERT")" = 1 ] || { cat certs.txt; echo "::error::the APK has more than one signing certificate"; exit 1; }
           BADGING=$("$TOOLS/aapt2" dump badging "$OUT")
           if grep -q "application-debuggable" <<<"$BADGING"; then echo "::error::the release APK is debuggable"; exit 1; fi
           grep -q "versionName='$VERSION'" <<<"$BADGING" || { echo "::error::the APK's versionName isn't $VERSION"; exit 1; }
