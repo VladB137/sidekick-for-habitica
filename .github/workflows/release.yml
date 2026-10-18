@@ -1,10 +1,12 @@
-# A public release: pushing a version tag (v1.0.0) builds the release APK, signed with the release key, and opens a
-# draft GitHub Release with it. Nothing is published until Vlad presses Publish on the draft. Steps: docs/releasing.md.
-# The tag must point at a commit on main (CI already passed there) and match package.json's version.
+# A public release: pushing a version tag (v1.0.0), or Run workflow on main (Actions -> Release), builds the release
+# APK, signed with the release key, and opens a draft GitHub Release with it. Run workflow tags main's commit with
+# package.json's version once the APK is built. Nothing is published until Vlad presses Publish on the draft.
+# Steps: docs/releasing.md. The tag must point at a commit on main (CI already passed there) and match package.json.
 name: Release
 on:
   push:
     tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,9 +27,17 @@ jobs:
           persist-credentials: false
       - name: The tag is on main and matches package.json
         env:
-          TAG: ${{ github.ref_name }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            [ "$GITHUB_REF" = refs/heads/main ] || { echo "::error::run it on main, not $REF_NAME"; exit 1; }
+            TAG="v$VERSION"
+            if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then echo "::error::$TAG already exists: bump package.json on main first"; exit 1; fi
+          else
+            TAG="$REF_NAME"
+          fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
           if [ "$TAG" != "v$VERSION" ]; then echo "::error::tag $TAG but package.json says $VERSION: bump package.json on main first"; exit 1; fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then echo "::error::$TAG points at a commit that isn't on main"; exit 1; fi
       # the Capacitor CLI needs Node 22+
@@ -39,8 +49,8 @@ jobs:
       # the web bundle carries Habitica's code for the made-up account behind "Try it"
       - name: Clone Habitica
         run: |
-          TAG=$(node -e "console.log(require('fs').readFileSync('src/engine/rules.ts','utf8').match(/checkedAgainst: '([^']+)'/)[1])")
-          git clone --depth 1 --branch "$TAG" https://github.com/HabitRPG/habitica ../habitica
+          HABITICA_TAG=$(node -e "console.log(require('fs').readFileSync('src/engine/rules.ts','utf8').match(/checkedAgainst: '([^']+)'/)[1])")
+          git clone --depth 1 --branch "$HABITICA_TAG" https://github.com/HabitRPG/habitica ../habitica
       - run: npm run harness -- ../habitica
       - name: Build the web bundle and copy it into the Android project
         run: |
@@ -60,8 +70,6 @@ jobs:
           (cd android && ./gradlew --no-daemon assembleRelease)
           rm -f "$RELEASE_KEYSTORE"
       - name: Check the APK (signed, not debuggable, the right version) and write the release notes
-        env:
-          TAG: ${{ github.ref_name }}
         run: |
           VERSION="${TAG#v}"
           TOOLS=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
@@ -87,8 +95,15 @@ jobs:
             echo "Signing certificate SHA-256: \`$CERT\`"
           } > notes.md
           cat notes.md
+      - name: Tag the commit (when started with Run workflow)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag "$TAG" "$GITHUB_SHA"
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" push origin "refs/tags/$TAG"
       - name: Open the draft release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
         run: gh release create "$TAG" "sidekick-for-habitica-${TAG#v}.apk" --draft --verify-tag --title "Sidekick for Habitica ${TAG#v}" --notes-file notes.md
