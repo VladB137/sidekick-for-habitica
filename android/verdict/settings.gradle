@@ -1,0 +1,2 @@
+// Lets the verdict build and test on its own (gradle -p android/verdict test) without the Android SDK.
+rootProject.name = 'verdict'

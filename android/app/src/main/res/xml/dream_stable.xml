@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Stable screen saver (StableDream.java): no settings screen, the app's Stable decides what it shows -->
+<dream xmlns:android="http://schemas.android.com/apk/res/android"
+    android:previewImage="@drawable/widget_stable_preview" />

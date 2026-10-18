@@ -1,0 +1,30 @@
+/* ---------------------------------------------------------------- buttons
+   Visual sizes follow Material 2017; every control also gets a 48 px touch area (::after),
+   and ripples are clipped by their own box so that area isn't cut off. */
+.btn, .navitem, .check, .hbtn, .li-btn, .menu-item { touch-action: manipulation; }
+.btn { font: 500 14px/36px Roboto, sans-serif; letter-spacing: .0892857143em; text-transform: uppercase; border: 0; border-radius: 2px; padding: 0 8px; min-width: 64px; height: 36px; cursor: pointer; background: transparent; color: var(--primary-text); display: inline-flex; align-items: center; justify-content: center; gap: 8px; position: relative; user-select: none; flex: none; }
+.btn::after { content: ''; position: absolute; left: 0; right: 0; top: -6px; bottom: -6px; }
+/* disabled reads as disabled: grey, not a paler Teal (the row's own text says why) */
+.btn[disabled] { color: var(--text-3); cursor: default; }
+.btn-raised[disabled] { background: var(--divider); color: var(--text-3); box-shadow: none; }
+.btn .icon { width: 18px; height: 18px; }
+.btn-dense { height: 32px; line-height: 32px; min-width: 0; padding: 0 4px; font-size: 12px; letter-spacing: .04em; }
+.btn-dense::after { top: -8px; bottom: -8px; }
+.btn-raised { background: var(--primary); color: #fff; padding: 0 16px; box-shadow: var(--z2); transition: box-shadow .28s var(--ease), background-color .2s; }
+.btn-raised:active { box-shadow: var(--z8); }
+.btn-raised.accent { background: var(--accent); color: var(--on-accent); }
+.btn-icon { width: 48px; height: 48px; min-width: 48px; border-radius: 50%; padding: 12px; color: var(--text-2); }
+.btn-icon::after { display: none; }
+.btn-icon .icon { width: 24px; height: 24px; }
+.ripple-host { position: relative; }
+.ripple-box { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.ripple { position: absolute; border-radius: 50%; background: var(--ripple); transform: scale(0); animation: ripple .55s var(--ease); pointer-events: none; }
+.btn-raised .ripple, .appbar .ripple { background: rgba(255,255,255,.3); }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+@media (hover: hover) {
+  .btn:hover:not([disabled]), .li-btn:hover { background-color: var(--hover); }
+  .btn-raised:hover:not([disabled]) { background: var(--primary-dark); }
+  .btn-raised.accent:hover:not([disabled]) { background: var(--accent-dark); }
+  .hbtn.plus:hover:not([disabled])::before { border-color: var(--primary-text); }
+  .hbtn.minus:hover:not([disabled])::before { border-color: var(--error); }
+}

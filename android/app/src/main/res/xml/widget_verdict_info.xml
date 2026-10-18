@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Updated by the app, the notification service and the 15-minute refresh; never on its own timer -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="1"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialLayout="@layout/widget_verdict"
+    android:previewLayout="@layout/widget_verdict"
+    android:description="@string/widget_description"
+    android:updatePeriodMillis="0" />

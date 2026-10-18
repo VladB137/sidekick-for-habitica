@@ -1,0 +1,22 @@
+{
+  "name": "Sidekick for Habitica",
+  "short_name": "Sidekick",
+  "description": "A crit planner for Habitica: see before you tap whether your next task will crit.",
+  "id": "./",
+  "start_url": "./#now",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#004D40",
+  "categories": ["productivity", "games"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Now", "url": "./#now", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Tasks", "url": "./#tasks", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

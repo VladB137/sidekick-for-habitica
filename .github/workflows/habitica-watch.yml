@@ -1,0 +1,157 @@
+# Daily: has Habitica released a version Sidekick's rules haven't been checked against?
+# Most days there is none: one ls-remote and the job ends. On a new release it runs the full parity suite and the
+# gear check against it, and watches the Android app's class-bonus display either way.
+#   - every suite identical -> a branch habitica-vX.Y.Z that only moves checkedAgainst (and the version in the docs)
+#     and regenerates src/data. The project's daily Claude routine opens the PR from it, and Vlad approved
+#     (2026-10-13) merging these without his per-PR word once CI is green.
+#   - a rule moved          -> an issue with the failing cases; the routine reports it in the project.
+name: Habitica watch
+on:
+  schedule:
+    - cron: '17 6 * * *'   # daily 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      # no write token on disk while Habitica's code runs below; the push step passes it for that one command
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - name: Newest Habitica release
+        id: tags
+        run: |
+          LATEST=$(git ls-remote --tags --refs https://github.com/HabitRPG/habitica 'v*' | sed 's|.*refs/tags/||' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          CHECKED=$(sed -n "s/.*checkedAgainst: '\([^']*\)'.*/\1/p" src/engine/rules.ts)
+          NEWEST=$(printf '%s\n%s\n' "$LATEST" "$CHECKED" | sort -V | tail -1)
+          if [ -n "$LATEST" ] && [ "$LATEST" != "$CHECKED" ] && [ "$NEWEST" = "$LATEST" ]; then NEW=true; else NEW=false; fi
+          {
+            echo "latest=$LATEST"
+            echo "checked=$CHECKED"
+            echo "new=$NEW"
+          } >> "$GITHUB_OUTPUT"
+          echo "Habitica $LATEST, rules checked against $CHECKED, new release: $NEW"
+      - name: Android class-bonus display
+        id: android
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/HabitRPG/habitica-android/main/Habitica/src/main/java/com/habitrpg/android/habitica/helpers/UserStatComputer.kt -o usc.kt
+          LINE=$(grep -m1 -o 'classBonus = [0-9.]*f' usc.kt || echo 'not found')
+          echo "line=$LINE" >> "$GITHUB_OUTPUT"
+          echo "Android: $LINE"
+
+      - name: Clone Habitica ${{ steps.tags.outputs.latest }}
+        id: clone
+        if: steps.tags.outputs.new == 'true'
+        env:
+          LATEST: ${{ steps.tags.outputs.latest }}
+          CHECKED: ${{ steps.tags.outputs.checked }}
+        run: |
+          git clone --depth 1 --branch "$LATEST" https://github.com/HabitRPG/habitica ../habitica
+          cd ../habitica
+          git fetch -q --depth 1 origin tag "$CHECKED"
+          FILES=(
+            website/common/script/fns/crit.js
+            website/common/script/fns/predictableRandom.js
+            website/common/script/ops/scoreTask.js
+            website/common/script/libs/statsComputed.js
+            website/common/script/content/spells.js
+            website/common/script/fns/updateStats.js
+            website/common/script/fns/autoAllocate.js
+            website/common/script/ops/sell.js
+            website/common/script/ops/equip.js
+            website/common/script/ops/stats
+            website/common/script/ops/buy
+            website/common/script/fns/handleTwoHanded.js
+            website/server/models/user/hooks.js
+            website/server/libs/spells.js
+            website/server/libs/tasks/index.js
+            website/server/controllers/api-v3/tasks.js
+            package.json
+          )
+          CHANGED=$(git diff --name-only "$CHECKED" "$LATEST" -- "${FILES[@]}" | tr '\n' ' ')
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "Engine files changed upstream: ${CHANGED:-none}"
+      - uses: actions/setup-node@v4
+        if: steps.tags.outputs.new == 'true'
+        with: { node-version: 20, cache: npm }
+      - if: steps.tags.outputs.new == 'true'
+        run: npm ci && npm run harness -- ../habitica
+      - name: Parity suite against ${{ steps.tags.outputs.latest }}
+        id: parity
+        if: steps.tags.outputs.new == 'true'
+        continue-on-error: true
+        shell: bash   # bash -eo pipefail: a failing suite must fail this step even through tee
+        run: npm run test:parity 2>&1 | tee parity.log
+      - name: Refresh the item table and the Stable's sprites, then check every item and creature resolves
+        id: data
+        if: steps.parity.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          LATEST: ${{ steps.tags.outputs.latest }}
+          CHECKED: ${{ steps.tags.outputs.checked }}
+        run: |
+          npm run gen:data
+          # the parity suite passed against the newest release, so the engine is verified for it
+          sed -i "s/checkedAgainst: '[^']*'/checkedAgainst: '$LATEST'/" src/engine/rules.ts
+          for f in docs/details.md CLAUDE.md; do if [ -f "$f" ]; then sed -i "s/$CHECKED/$LATEST/g" "$f"; fi; done
+          npm run test:gear 2>&1 | tee -a parity.log
+          # pet and mount images live in Habitica's image repo (not tagged per release): newest at bump time
+          git clone -q --depth 1 --filter=blob:none --sparse https://github.com/HabitRPG/habitica-images ../habitica-images
+          git -C ../habitica-images sparse-checkout set --no-cone '/stable/pets/' '/stable/mounts/body/' '/stable/mounts/head/' '/animated/' '/skills/' '/gear/' '/quests/bosses/' '/quests/items/'
+          npm run gen:sprites -- ../habitica-images
+          # the outline of each boss, for the Stable's sky, for the bosses gen:data just wrote
+          npm run gen:bosses -- ../habitica-images
+          # the finds of each collection quest, for the Stable's grass
+          npm run gen:finds -- ../habitica-images
+          # item and skill icons, for the gear keys gen:data just wrote
+          npm run gen:shop -- ../habitica-images
+          npm run test:sprites 2>&1 | tee -a parity.log
+
+      - name: Open an issue when a rule moved
+        if: steps.parity.outcome == 'failure' || steps.data.outcome == 'failure' || !contains(steps.android.outputs.line, '0.5f')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.existsSync('parity.log') ? fs.readFileSync('parity.log', 'utf8').slice(-6000) : '';
+            const title = `Habitica ${{ steps.tags.outputs.latest }}: Sidekick for Habitica needs a look`;
+            const open = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open' });
+            if (open.data.some(i => i.title === title)) return;
+            await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, labels: [], assignees: ['VladB137'], body: [
+              `Rules were last checked against **${{ steps.tags.outputs.checked }}**; newest release is **${{ steps.tags.outputs.latest }}**.`,
+              `Parity: ${{ steps.parity.outcome || 'not run (no new release)' }}. Item and sprite check: ${{ steps.data.outcome || 'not run' }}.`,
+              `Engine files changed: \`${{ steps.clone.outputs.changed }}\``,
+              `Android display: \`${{ steps.android.outputs.line }}\` (0.5f = still the old half bonus; anything else means the "equipment numbers" note in the app needs updating).`,
+              '', '```', log, '```',
+            ].join('\n') });
+      # Only the branch: the repo doesn't let the workflow token open PRs ("GitHub Actions is not permitted to create
+      # or approve pull requests"), and a PR it opened wouldn't start CI anyway. The daily routine opens the PR from
+      # this branch (CI then runs on its own) and merges it once green.
+      - name: Push the bump branch
+        if: steps.data.outcome == 'success'
+        env:
+          LATEST: ${{ steps.tags.outputs.latest }}
+          CHECKED: ${{ steps.tags.outputs.checked }}
+          CHANGED: ${{ steps.clone.outputs.changed }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "habitica-$LATEST"
+          git add src/engine/rules.ts src/data public/stable public/shop docs/details.md
+          if [ -f CLAUDE.md ]; then git add CLAUDE.md; fi
+          git commit -q -F - <<MSG
+          Habitica $LATEST: parity identical, item table refreshed
+
+          The full parity suite is identical against Habitica $LATEST (was checked against $CHECKED),
+          and every piece of gear and every pet and mount resolves in the regenerated tables.
+          Engine files changed upstream: ${CHANGED:-none}
+          MSG
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" push --force origin "HEAD:refs/heads/habitica-$LATEST"
+          echo "Pushed habitica-$LATEST; the daily routine opens and merges the PR."

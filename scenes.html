@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!--CSP-->
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="data:,">
+  <title>Stable scenes (dev)</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #263238; color: #ECEFF1; font: 13px/1.3 Roboto, sans-serif; }
+    #pg { position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
+    #gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 12px; }
+    #gallery figure { margin: 0; }
+    #gallery .tile { height: 300px; }
+    #gallery figcaption { height: 24px; line-height: 24px; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <!-- Development page for the Stable's scenes and props: one scene full screen, or every scene side by side
+       (?gallery=1). No account, no creatures. Built only for local development and the e2e build, never shipped. -->
+  <div id="pg"></div>
+  <script type="module" src="./src/playground/scenes/dev.ts"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+tools/harness/.build/
+*.log
+.DS_Store
+patches/
+dist-e2e/
+/screenshots/
+/old-webview/
+android/app/dev-debug.keystore
+dist-sim/
+sweep-report*.json

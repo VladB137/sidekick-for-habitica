@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: A security problem
+    url: https://github.com/VladB137/sidekick-for-habitica/security/advisories/new
+    about: Report it privately here, not as a public issue. Never include an API Token.
+  - name: A problem with Habitica itself
+    url: mailto:admin@habitica.com
+    about: Sidekick is independent; Habitica's own bugs go to Habitica.

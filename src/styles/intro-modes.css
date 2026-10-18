@@ -1,0 +1,45 @@
+/* ---------------------------------------------------------------- intro: Stable, days, modes */
+.ob-meadow { position: relative; width: 100%; max-width: 320px; aspect-ratio: 16 / 9; border-radius: 2px; overflow: hidden; box-shadow: var(--z8); background: #81C784; }
+.ob-meadow-bg { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+.ob-pet { position: absolute; height: auto; image-rendering: pixelated; }
+.ob-pet.flip { transform: scaleX(-1); }
+.ob-credit { margin: 0; max-width: 320px; font-size: 11px; line-height: 16px; opacity: .8; }
+.ob-heat { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; padding: 0 16px 12px; }
+.ob-heat .c { width: auto; height: auto; aspect-ratio: 1; }
+.ob-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 10px 0 6px; margin-bottom: 12px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.ob-chip .icon { width: 16px; height: 16px; }
+.ob-modes { display: flex; gap: 12px; width: 100%; max-width: 320px; }
+.ob-mode { flex: 1; padding-bottom: 14px; }
+.ob-mode .ob-card-title { display: flex; align-items: center; gap: 8px; }
+.ob-mode .icon { color: var(--primary-text); }
+.ob-mode-full .icon { color: var(--accent-dark); }
+.ob-mode-text { padding: 0 16px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+
+/* ---------------------------------------------------------------- mode choice (after login, once) */
+.mode-choice { overflow-y: auto; }
+.mode-body { flex: 1 0 auto; width: 100%; max-width: 480px; margin: 0 auto; padding: 8px 16px 24px; box-sizing: border-box; text-align: center; }
+.mode-cards { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.mode-card { display: block; width: 100%; text-align: left; border: 0; border-radius: 2px; padding: 16px; background: var(--surface); color: var(--text); box-shadow: var(--z2); font: inherit; cursor: pointer; position: relative; overflow: hidden; transition: box-shadow .28s var(--ease); }
+.mode-card:hover, .mode-card:focus-visible { box-shadow: var(--z8); }
+.mode-head { display: flex; align-items: center; gap: 12px; }
+.mode-icon { color: var(--primary-text); }
+.mode-full .mode-icon { color: var(--accent-dark); }
+.mode-name { font-size: 20px; font-weight: 500; }
+.mode-short { display: block; margin: 4px 0 8px; font-size: 14px; color: var(--text-2); }
+.mode-gets { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 20px; }
+.mode-gets li { display: flex; gap: 8px; padding: 4px 0; }
+.mode-check { width: 18px; height: 18px; flex: none; color: var(--primary-text); }
+.mode-hides { display: block; margin-top: 8px; font-size: 12px; color: var(--text-2); }
+.mode-foot { margin: 16px 0 0; font-size: 14px; opacity: .9; }
+.radio { width: 20px; height: 20px; margin: 0 4px; flex: none; accent-color: var(--primary); cursor: pointer; }
+
+/* ---------------------------------------------------------------- first-run tips (coach marks) */
+.coach { position: fixed; inset: 0; z-index: 60; cursor: pointer; }
+.coach-ring { position: fixed; border-radius: 4px; box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(0,0,0,.6); pointer-events: none; transition: all var(--t-medium) var(--ease); }
+.coach-ring[hidden] { display: block; box-shadow: 0 0 0 9999px rgba(0,0,0,.6); width: 0 !important; height: 0 !important; }
+.coach-bubble { position: fixed; left: 16px; right: 16px; max-width: 360px; margin: 0 auto; background: var(--surface); color: var(--text); border-radius: 2px; box-shadow: var(--z8); padding: 16px 16px 8px; cursor: default; }
+.coach-title { font-size: 18px; font-weight: 500; }
+.coach-text { margin: 6px 0 4px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.coach-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+.coach-count { margin-right: auto; font-size: 12px; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .coach-ring { transition: none; } }

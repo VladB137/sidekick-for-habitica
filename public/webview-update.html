@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#004D40">
+  <title>Sidekick for Habitica can’t start</title>
+  <!-- shown instead of a blank screen when the phone's Android System WebView is too old to run the app:
+       by the Android app (capacitor.config.ts android.minWebViewVersion + server.errorPath) or by webview-check.js -->
+  <style>
+    body { margin: 0; font: 16px/24px Roboto, 'Noto Sans', sans-serif; background: #FAFAFA; color: rgba(0,0,0,.87); }
+    header { background: #00796B; color: #fff; padding: 16px; font-size: 20px; font-weight: 500; }
+    main { padding: 16px; max-width: 480px; }
+    a.btn { display: inline-block; margin-top: 8px; padding: 10px 16px; background: #00796B; color: #fff; border-radius: 2px; text-decoration: none; font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+    a.btn-2 { background: transparent; color: #00796B; box-shadow: inset 0 0 0 1px rgba(0,0,0,.24); }
+    p.small { font-size: 14px; color: rgba(0,0,0,.6); }
+    [hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <header>Sidekick for Habitica</header>
+  <main>
+    <p><b>This phone’s Android System WebView is too old to run Sidekick.</b>
+      <span id="have" hidden>It has version <span id="version"></span>; the app needs 66 or newer.</span></p>
+    <p><b>With Google Play:</b> update Android System WebView there, then open Sidekick again.</p>
+    <a class="btn" href="https://play.google.com/store/apps/details?id=com.google.android.webview">Open in Google Play</a>
+    <p><b>Without Google Play:</b> install the phone’s system updates (Settings, System, System update), or update the WebView from
+      the app store the phone came with (on Huawei, Huawei WebView in AppGallery). Aurora Store can also update Android System
+      WebView without a Google account.</p>
+    <a class="btn btn-2" href="market://details?id=com.google.android.webview">Open the phone’s app store</a>
+    <p class="small">Google Play updates it on its own on most phones; a phone that was just reset may not have had the update yet. In a web browser, update the browser instead.</p>
+  </main>
+  <script src="./webview-update.js"></script>
+</body>
+</html>

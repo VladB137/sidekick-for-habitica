@@ -1,0 +1,103 @@
+apply plugin: 'com.android.application'
+
+def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+def appVersionParts = (appVersion =~ /^(\d+)\.(\d+)\.(\d+)/)
+if (!appVersionParts.find()) throw new GradleException("package.json version ${appVersion} isn't major.minor.patch")
+def appVersionCode = appVersionParts.group(1).toInteger() * 10000 + appVersionParts.group(2).toInteger() * 100 + appVersionParts.group(3).toInteger()
+// The public release key: .github/workflows/release.yml writes it from the RELEASE_KEYSTORE_B64 secret and passes its
+// path and password in these variables (docs/releasing.md). Without them a release build comes out unsigned.
+def releaseKeystore = System.getenv('RELEASE_KEYSTORE')
+
+android {
+    namespace = "io.github.critoracle"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        // the id Android and the stores know the app by; final once anyone installs it. The Java code keeps its
+        // io.github.critoracle namespace (never seen outside the code).
+        applicationId "io.github.vladb137.sidekick"
+        // names come from here, not strings.xml, so a dev build can say it's one
+        resValue "string", "app_name", "Sidekick for Habitica"
+        resValue "string", "title_activity_main", "Sidekick"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        // one version for the whole app: package.json's (Settings shows it too); code = major×10000 + minor×100 + patch
+        versionCode appVersionCode
+        versionName appVersion
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    // the gear table the web bundle is built from, for the native verdict
+    sourceSets.main.assets.srcDirs += layout.buildDirectory.dir('generated/verdictAssets')
+    // Dev builds share one debug key so a newer dev APK installs over the last one and keeps the login. CI writes it to
+    // android/app/dev-debug.keystore (git-ignored) from the DEV_KEYSTORE_B64 secret; without that file Gradle's own
+    // per-machine debug key is used. Not the release key (below).
+    if (file('dev-debug.keystore').exists()) {
+        signingConfigs {
+            debug {
+                storeFile file('dev-debug.keystore')
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+    }
+    // CI runs :app:lintDebug: an error fails the build, warnings are only reported
+    lint {
+        abortOnError true
+        warningsAsErrors false
+    }
+    if (releaseKeystore) {
+        signingConfigs {
+            release {
+                storeFile file(releaseKeystore)
+                storePassword System.getenv('RELEASE_KEYSTORE_PASSWORD')
+                keyAlias 'sidekick'
+                // a PKCS12 keystore (keytool's default) has one password for the store and the key
+                keyPassword System.getenv('RELEASE_KEYSTORE_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            // dev builds are a separate app (….sidekick.dev): they install next to the released one, each with its own login
+            applicationIdSuffix ".dev"
+            resValue "string", "app_name", "Sidekick for Habitica dev"
+            resValue "string", "title_activity_main", "Sidekick dev"
+        }
+        release {
+            // not debuggable (the default for release): adb can't run as the app, so nothing outside it can make the Keystore decrypt the token
+            if (releaseKeystore) signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    implementation project(':capacitor-cordova-android-plugins')
+    implementation project(':verdict')
+    testImplementation "junit:junit:$junitVersion"
+}
+
+apply from: 'capacitor.build.gradle'
+
+// src/data/gear.json and items.json → assets (one table for the WebView and the native verdict and notification lines)
+def copyGear = tasks.register('copyGearTable', Copy) {
+    from '../../src/data/gear.json', '../../src/data/items.json'
+    into layout.buildDirectory.dir('generated/verdictAssets')
+}
+preBuild.dependsOn copyGear

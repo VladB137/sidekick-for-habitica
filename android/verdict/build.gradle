@@ -1,0 +1,28 @@
+// The crit verdict in plain Java: used by the app's notification, widget and tile, and
+// tested on any JDK against vectors exported from the TypeScript engine
+// (npm run android:fixtures writes them to build/fixtures).
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}
+
+test {
+    systemProperty 'fixtures', layout.buildDirectory.dir('fixtures').get().asFile.path
+    systemProperty 'gearJson', file('../../src/data/gear.json').path
+    systemProperty 'itemsJson', file('../../src/data/items.json').path
+    // -PmockUrl=http://127.0.0.1:3001 runs the night gear swap against tools/mock-server.mjs (Habitica's own equip and cron)
+    systemProperty 'mockUrl', project.findProperty('mockUrl') ?: ''
+    testLogging { events 'failed'; exceptionFormat = 'full'; showStandardStreams = true }
+}

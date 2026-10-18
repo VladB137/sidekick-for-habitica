@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- habitica.com only (the web bundle's CSP and the native reader both stop there) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 14+ refuses to schedule a job that needs the network without it (the refresh, night gear and To-Do jobs) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- the verdict notification and the repeating To-Do reminders (asked for when the player switches either on, Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- noticing the Habitica app close; granted only by the player in Settings → Special app access -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <!-- keeps the 15-minute refresh, the night gear swap and repeating To-Do reminders scheduled across restarts, when the player switched them on -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- login's "Open Habitica settings" opens Habitica's own app when it's installed (Android 11+ hides other apps without this) -->
+    <queries>
+        <package android:name="com.habitrpg.android.habitica" />
+    </queries>
+
+    <!-- the Stable as a live wallpaper; phones without live wallpapers still install the app -->
+    <uses-feature android:name="android.software.live_wallpaper" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:targetApi="31">
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:launchMode="singleTask"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <service
+            android:name=".VerdictService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="@string/fgs_reason" />
+        </service>
+
+        <service
+            android:name=".RefreshJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".RedrawJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".NightGearJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <!-- repeating To-Dos: the reminder when one is back, and the request its "Add to To-Dos" button asks for -->
+        <service
+            android:name=".RepeatJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".RepeatReceiver"
+            android:exported="false" />
+
+        <service
+            android:name=".VerdictTile"
+            android:exported="true"
+            android:icon="@drawable/ic_stat_crit"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- the notification's Refresh button: one read, like a tap on the tile -->
+        <receiver
+            android:name=".RefreshReceiver"
+            android:exported="false" />
+
+        <!-- the verdict notification swiped away (Android 14+): it stays away until the app is opened -->
+        <receiver
+            android:name=".DismissReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".VerdictWidget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_verdict_info" />
+        </receiver>
+
+        <!-- the Stable: a still picture of the meadow for this hour of the day; a tap opens the app on the Stable -->
+        <receiver
+            android:name=".StableWidget"
+            android:label="@string/stable_widget_label"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_stable_info" />
+        </receiver>
+
+        <!-- the Stable as a live wallpaper: the open playground moving on the home screen, only while it's visible -->
+        <service
+            android:name=".StableWallpaper"
+            android:label="@string/stable_wallpaper_label"
+            android:permission="android.permission.BIND_WALLPAPER"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_stable" />
+        </service>
+
+        <!-- the Stable as Android's screen saver: the same playground with a clock, while the phone charges or is docked -->
+        <service
+            android:name=".StableDream"
+            android:label="@string/stable_dream_label"
+            android:permission="android.permission.BIND_DREAM_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.dream"
+                android:resource="@xml/dream_stable" />
+        </service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+    </application>
+</manifest>

@@ -1,0 +1,81 @@
+/* Sidekick — Material Design, 2017 edition. Teal 700 + Amber A400, Roboto, follows the system theme.
+   Contrast: white on Teal 700 is 5.3:1; every text colour below meets WCAG AA on its background. */
+:root {
+  --primary: #00796B;          /* Teal 700: app bar, raised buttons (white text) */
+  --primary-dark: #004D40;     /* Teal 900: status bar, pressed */
+  --primary-light: #B2DFDB;    /* Teal 100 */
+  --accent: #FFC400;           /* Amber A400 */
+  --accent-dark: #FFA000;      /* Amber 700 (fills only, never text on white) */
+  --setup: #A15C00;            /* amber-brown for small crit marks on light surfaces */
+  --on-primary: #FFFFFF;
+  --on-accent: rgba(0, 0, 0, .87);
+  --bg: #FAFAFA;               /* Grey 50 */
+  --surface: #FFFFFF;
+  --text: rgba(0, 0, 0, .87);
+  --text-2: rgba(0, 0, 0, .60);
+  --text-3: rgba(0, 0, 0, .38);
+  --divider: rgba(0, 0, 0, .12);
+  --hover: rgba(0, 0, 0, .04);
+  --tag-bg: rgba(0, 0, 0, .06);
+  --ripple: rgba(0, 0, 0, .12);
+  --error: #C62828;
+  --warn-bg: #FFF8E1;
+  --hp: #F44336; --mp: #2196F3; --xp: #FFA000; --gp: #FFB300;
+  --v-worst: #C62828; --v-worse: #EF5350; --v-bad: #FF9800; --v-neutral: #FDD835; --v-good: #66BB6A; --v-better: #29B6F6; --v-best: #1565C0;
+  --z1: 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12), 0 1px 3px 0 rgba(0,0,0,.2);
+  --z2: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);
+  --z4: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.2);
+  --z6: 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12), 0 3px 5px -1px rgba(0,0,0,.2);
+  --z8: 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12), 0 5px 5px -3px rgba(0,0,0,.2);
+  --z16: 0 16px 24px 2px rgba(0,0,0,.14), 0 6px 30px 5px rgba(0,0,0,.12), 0 8px 10px -5px rgba(0,0,0,.2);
+  /* Material 2017 motion: standard curve, deceleration for things arriving, acceleration for things leaving.
+     Only transform and opacity are animated, so the GPU does the work and layout never runs per frame. */
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --ease-in: cubic-bezier(0, 0, .2, 1);
+  --ease-out: cubic-bezier(.4, 0, 1, 1);
+  --t-short: 150ms; --t-medium: 225ms; --t-long: 300ms;
+  /* the Capacitor inset alone where the WebView has no env() (before Chrome 69) or no max() (before 79): see the @supports below.
+     A var() that resolves to an unknown function voids every declaration using it, so env() never appears here unguarded. */
+  --safe-top: var(--safe-area-inset-top, 0px);
+  --safe-bottom: var(--safe-area-inset-bottom, 0px);
+  /* landscape: the camera cutout or the navigation bar on a side */
+  --safe-left: var(--safe-area-inset-left, 0px);
+  --safe-right: var(--safe-area-inset-right, 0px);
+  --primary-text: #00796B;
+  --focus: #1565C0;
+  --best-bg: #E0F2F1;          /* Teal 50: the cheapest way to crit */
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #303030; --surface: #424242; --text: #FFFFFF; --text-2: rgba(255,255,255,.72); --text-3: rgba(255,255,255,.5);
+    --divider: rgba(255,255,255,.12); --hover: rgba(255,255,255,.06); --tag-bg: rgba(255,255,255,.1); --ripple: rgba(255,255,255,.18); --warn-bg: #4E3B0A;
+    --primary-light: #004D40; --error: #EF9A9A; --primary-text: #80CBC4; --setup: #FFC400; --focus: #90CAF9; --best-bg: rgba(128,203,196,.1);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #303030; --surface: #424242; --text: #FFFFFF; --text-2: rgba(255,255,255,.72); --text-3: rgba(255,255,255,.5);
+  --divider: rgba(255,255,255,.12); --hover: rgba(255,255,255,.06); --tag-bg: rgba(255,255,255,.1); --ripple: rgba(255,255,255,.18); --warn-bg: #4E3B0A;
+  --primary-light: #004D40; --error: #EF9A9A; --primary-text: #80CBC4; --setup: #FFC400; --focus: #90CAF9; --best-bg: rgba(128,203,196,.1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 400 14px/20px Roboto, 'Helvetica Neue', Arial, sans-serif; letter-spacing: .0178em;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  /* kerning on everywhere: an old WebView left it off at small sizes, so lines broke at other words */
+  font-kerning: normal;
+  overscroll-behavior-y: none;
+}
+a { color: var(--primary-text); }
+h2 { margin: 0; }
+.icon { width: 24px; height: 24px; fill: currentColor; flex: none; }
+.icon.inline { width: 16px; height: 16px; vertical-align: -3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+main:focus { outline: none; }

@@ -1,0 +1,60 @@
+/* ---------------------------------------------------------------- sync button, bottom nav, snackbar, pull to refresh */
+/* the app bar's sync button turns while anything is being read */
+.sync.spin .icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(-360deg); } }
+.bottomnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); box-shadow: 0 -1px 4px rgba(0,0,0,.14); display: flex; justify-content: center; padding-bottom: var(--safe-bottom); padding-left: var(--safe-left); padding-right: var(--safe-right); transition: transform var(--t-medium) var(--ease); }
+.bottomnav-inner { display: flex; width: 100%; max-width: 720px; height: 56px; }
+.navitem { flex: 1; min-width: 0; max-width: 168px; border: 0; background: none; color: var(--text-2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; font: 400 12px/16px Roboto, sans-serif; transition: color var(--t-short) var(--ease); position: relative; padding: 0 4px; }
+.navitem .lbl { white-space: nowrap; }
+.navitem.active { color: var(--primary-text); }
+/* Material 2017 shifting style (five destinations). The current tab is wider (96–168 dp against 56–96), its icon
+   lifts 8 dp and its label fades and grows in under it; the others are centred icons. All of it eases together
+   on the standard curve, so tapping a tab reads as one movement: the old tab settles, the new one opens up.
+   Only the five buttons re-lay out while it runs (the bar is contained), the icon and label only transform. */
+.bottomnav.shifting { contain: layout paint; }
+.shifting .navitem {
+  flex: 1 1 0; min-width: 56px; max-width: 96px; padding: 0; justify-content: flex-start;
+  transition: color var(--t-medium) var(--ease), flex-grow var(--t-medium) var(--ease), max-width var(--t-medium) var(--ease);
+}
+.shifting .navitem.active { flex-grow: 1.75; min-width: 96px; max-width: 168px; }
+.shifting .navitem .icon { margin-top: 16px; transform: translateY(0); transition: transform var(--t-medium) var(--ease); }
+.shifting .navitem.active .icon { transform: translateY(-8px); }
+.shifting .navitem .lbl {
+  position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 14px; line-height: 20px;
+  overflow: hidden; text-overflow: ellipsis; padding: 0 4px;
+  opacity: 0; transform: translateY(6px) scale(.857);
+  transition: opacity var(--t-short) var(--ease-out), transform var(--t-medium) var(--ease);
+}
+.shifting .navitem.active .lbl { opacity: 1; transform: none; transition: opacity var(--t-medium) var(--ease-in) 50ms, transform var(--t-medium) var(--ease); }
+.bottomnav-inner { justify-content: center; }
+#snackbar { position: fixed; left: 50%; bottom: calc(56px + 8px + var(--safe-bottom)); transform: translate(-50%, 120%); min-width: 288px; max-width: 568px; max-width: min(568px, calc(100vw - 16px)); background: #323232; color: #fff; border-radius: 2px; box-shadow: var(--z6); display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 24px; min-height: 48px; z-index: 30; opacity: 0; transition: transform .25s var(--ease), opacity .25s; pointer-events: none; }
+#snackbar.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+#snackbar.crit { background: #3E2723; }
+#snackbar.crit .snack-text { color: var(--accent); font-weight: 500; }
+#snackbar.error .snack-text { color: #FF8A80; }
+.snack-text { flex: 1; padding: 8px 0; }
+.snack-action { color: var(--accent) !important; }
+@media (max-width: 599px) {
+  /* phones: full width, flush with the bottom navigation */
+  #snackbar { left: 0; right: 0; bottom: calc(56px + var(--safe-bottom)); transform: translateY(120%); min-width: 0; max-width: none; border-radius: 0; padding-left: 16px; }
+  #snackbar.show { transform: translateY(0); }
+}
+/* pull to refresh: the Material swipe-refresh disc. It waits under the app bar; script moves it while the
+   finger does (no transition then), .settle lets it glide to rest or back, .spinning is the indeterminate arc. */
+.ptr { position: fixed; left: 50%; top: calc(56px + var(--safe-top)); z-index: 19; width: 40px; height: 40px; margin-top: -44px; border-radius: 50%; background: var(--surface); color: var(--primary-text); box-shadow: var(--z4); display: flex; align-items: center; justify-content: center; transform: translate(-50%, 0); opacity: 0; pointer-events: none; will-change: transform; }
+.ptr.settle { transition: transform 200ms var(--ease), opacity 200ms var(--ease); }
+.ptr-svg { width: 28px; height: 28px; transform: rotate(-90deg); }
+.ptr-svg circle { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 3 55; opacity: .5; transition: opacity var(--t-short); }
+.ptr.armed .ptr-svg circle, .ptr.spinning .ptr-svg circle { opacity: 1; }
+.ptr.spinning { opacity: 1; }
+.ptr.spinning .ptr-svg { animation: ptr-turn 1.4s linear infinite; }
+.ptr.spinning .ptr-svg circle { animation: ptr-arc 1.4s var(--ease) infinite; }
+@keyframes ptr-turn { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
+@keyframes ptr-arc {
+  0% { stroke-dasharray: 1 55; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 40 55; stroke-dashoffset: -12; }
+  100% { stroke-dasharray: 40 55; stroke-dashoffset: -54; }
+}
+.progress { height: 4px; background: var(--primary-light); overflow: hidden; position: relative; margin: 24px 0; }
+.progress::before { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; background: var(--primary); animation: indet 1.2s var(--ease) infinite; }
+@keyframes indet { from { left: -40%; } to { left: 100%; } }

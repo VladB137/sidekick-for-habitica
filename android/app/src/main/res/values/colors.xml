@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 2017: Teal 500 / Teal 700 / Teal 900, Amber A400 (src/styles.css) -->
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#004D40</color>
+    <color name="colorAccent">#FFC400</color>
+    <color name="splash_background">#004D40</color>
+</resources>

@@ -1,0 +1,48 @@
+/* ---------------------------------------------------------------- polish (brainstorm B2, B3, B5, B6) */
+/* numbers line up in columns and don't jiggle as they change */
+.mono, .chip, .tag, .bars, #snackbar, .appbar-title, .dial, .you-sub { font-variant-numeric: tabular-nums; }
+
+/* a tapped checkbox draws its tick once Habitica has taken the score (ui/motion.ts) */
+.check svg.tick-in { animation: tick-in 200ms var(--ease-in); }
+@keyframes tick-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* a landed crit: amber sparks from what was tapped */
+.sparks { position: fixed; z-index: 35; width: 0; height: 0; pointer-events: none; }
+.sparks span { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: spark 600ms var(--ease-in) forwards; }
+.sparks span:nth-child(even) { background: var(--accent-dark); width: 4px; height: 4px; left: -2px; top: -2px; }
+@keyframes spark { from { transform: translate(0, 0) scale(1); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(.3); opacity: 0; } }
+
+/* the player's own pets in quiet moments (ui/pet.ts): Habitica's art, crisp at one CSS pixel per image pixel */
+.pet-pic { display: inline-block; flex: none; background-repeat: no-repeat; background-position: 0 0; image-rendering: pixelated; }
+.you-done { display: flex; align-items: center; gap: 12px; padding: 0 16px 12px; color: var(--text-2); font-size: 14px; }
+.you-done .pet-pic { animation: pet-hop 600ms var(--ease) 2; }
+@keyframes pet-hop { 50% { transform: translateY(-6px); } }
+.offline-body { display: flex; align-items: flex-end; gap: 16px; }
+.offline-body > p { flex: 1; }
+.nap { position: relative; flex: none; padding-top: 12px; }
+.pet-pic.asleep { filter: saturate(.55) brightness(.92); }
+.zz { position: absolute; right: -4px; top: 0; color: var(--text-2); font: 500 14px/1 Roboto, sans-serif; animation: zz-drift 2.4s var(--ease) infinite; }
+.zz span { font-size: 10px; margin-left: 1px; vertical-align: super; }
+@keyframes zz-drift { 0% { opacity: 0; transform: translate(0, 4px); } 30%, 70% { opacity: 1; } 100% { opacity: 0; transform: translate(4px, -6px); } }
+
+/* ---------------------------------------------------------------- folding cards (ui/fold.ts) */
+.fold-summary { display: flex; align-items: center; gap: 8px; }
+.fold-sub > summary.fold-summary { padding: 12px 16px; min-height: 48px; box-sizing: border-box; }
+.fold-name { font: inherit; margin: 0; flex: 1; }
+.fold-count { color: var(--text-2); font-size: 14px; font-weight: 400; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.fold-count .icon { width: 16px; height: 16px; }
+.fold:not([open]) > summary.card-head { padding-bottom: 16px; }
+.fold > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+/* a row's text never gives way to its buttons: they wrap under it, at the end, when the row is narrow */
+.li { flex-wrap: wrap; }
+.li > .li-main { flex: 1 1 96px; }
+.li-main + .btn, .li-main + .li-end { margin-left: auto; }
+.li-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin: 4px -8px 0 0; }
+/* a Daily's last two weeks, one square per day, on Stats */
+.mini-heat { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; padding: 4px 16px 4px; margin: 0; overflow: visible; }
+.mini-heat .c { width: auto; height: auto; aspect-ratio: 1; }
+.mini-heat-label { display: flex; justify-content: space-between; padding: 0 16px 8px; font-size: 12px; color: var(--text-2); }
+/* a small (i) that opens a longer explanation */
+.hint { display: inline-flex; vertical-align: middle; padding: 0; margin: -4px 0 -4px 2px; width: 24px; height: 24px; align-items: center; justify-content: center; border: 0; background: none; color: var(--text-2); cursor: help; position: relative; }
+.hint::after { content: ''; position: absolute; inset: -12px; }
+.hint .icon { width: 18px; height: 18px; }

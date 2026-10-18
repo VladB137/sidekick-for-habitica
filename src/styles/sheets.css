@@ -1,0 +1,28 @@
+/* ---------------------------------------------------------------- sheets */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .2s; z-index: 40; }
+.scrim.open { opacity: 1; }
+.sheet { position: fixed; left: 50%; bottom: 0; transform: translate(-50%, 100%); width: 100%; max-width: 640px; max-height: 88vh; overflow: auto; background: var(--surface); box-shadow: var(--z16); z-index: 41; transition: transform var(--t-medium) var(--ease-out); will-change: transform; padding-bottom: var(--safe-bottom); }
+.sheet.open { transform: translate(-50%, 0); transition-timing-function: var(--ease-in); }
+.sheet-title { font-size: 20px; line-height: 28px; font-weight: 500; padding: 20px 24px 8px; }
+.sheet-body { padding: 0 24px 8px; }
+.sheet-body .list { margin: 0 -24px; }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 8px; position: sticky; bottom: 0; background: var(--surface); }
+.sheet-actions .primary { background: var(--primary); color: #fff; }
+.sheet-actions .primary[disabled] { background: var(--divider); color: var(--text-2); opacity: 1; }
+
+/* ---------------------------------------------------------------- overflow menu (Material 2017 simple menu) */
+.scrim.clear { background: transparent; }
+.menu { position: fixed; z-index: 41; min-width: 168px; margin: 0; padding: 8px 0; list-style: none; background: var(--surface); color: var(--text); border-radius: 2px; box-shadow: var(--z8);
+  transform-origin: top right; transform: scale(.85); opacity: 0; transition: transform var(--t-short) var(--ease-in), opacity var(--t-short) var(--ease-in); }
+.menu.open { transform: none; opacity: 1; }
+.menu-item { display: flex; align-items: center; gap: 16px; width: 100%; height: 48px; padding: 0 24px 0 16px; border: 0; background: none; color: inherit; font: 400 16px/24px Roboto, sans-serif; text-align: left; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.menu-item .icon { color: var(--text-2); }
+.menu-item:focus-visible { outline: none; background: var(--hover); }
+@media (hover: hover) { .menu-item:hover { background: var(--hover); } }
+
+/* ---------------------------------------------------------------- Report a problem: the lines that go into the issue */
+.report-details { margin: 8px 0; padding: 8px 12px; background: var(--bg); border: 1px solid var(--card-line); border-radius: 8px;
+  font: 600 12px/18px Nunito, sans-serif; white-space: pre-wrap; word-wrap: break-word; -webkit-user-select: text; user-select: text; }
+/* Keep running on this phone: where each maker hides the switch */
+.keep-steps { margin: 8px 0; padding-left: 20px; }
+.keep-steps li { margin: 6px 0; }

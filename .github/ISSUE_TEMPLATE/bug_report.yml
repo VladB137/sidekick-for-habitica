@@ -1,0 +1,40 @@
+name: Report a problem
+description: Something in Sidekick doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste your Habitica API Token here.** It works like your password, and issues are public. Nobody working on Sidekick will ever ask for it.
+
+        Sidekick for Habitica is an independent app, not affiliated with or endorsed by Habitica. Problems with Habitica itself go to Habitica: admin@habitica.com.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you saw, and what you expected instead. What the banner or the character's bubble said helps too.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details from the app
+      description: Settings → About → Report a problem fills this in, or tap Copy there and paste it here. It holds the app's version and the phone's, nothing from your account.
+      render: text
+    validations:
+      required: false
+  - type: input
+    id: phone
+    attributes:
+      label: Phone
+      description: Its make and model, if the details above don't say.
+      placeholder: Pixel 6, Android 14
+    validations:
+      required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshots
+      description: Optional. Cover your User ID, name and task names if you'd rather not share them.
+    validations:
+      required: false

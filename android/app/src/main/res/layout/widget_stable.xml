@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Stable widget: the meadow's picture for this hour (StableWidget). The root's id lets Android 12+ round its corners. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:contentDescription="@string/stable_widget_label">
+
+    <ImageView
+        android:id="@+id/stable_picture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/stable_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="12dp"
+        android:maxLines="4"
+        android:ellipsize="end"
+        android:text="@string/stable_widget_empty"
+        android:textColor="#B3FFFFFF"
+        android:textSize="14sp" />
+</FrameLayout>

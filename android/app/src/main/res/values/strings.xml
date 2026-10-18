@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="package_name">io.github.vladb137.sidekick</string>
+    <string name="custom_url_scheme">io.github.critoracle</string>
+    <string name="widget_empty">Open Sidekick and log in with “Remember on this device”.</string>
+    <string name="widget_description">Whether your next Habitica task will crit</string>
+    <string name="stable_widget_label">Stable</string>
+    <string name="stable_widget_description">A still picture of your Stable that follows the time of day</string>
+    <string name="stable_widget_empty">Open Sidekick to draw your Stable here.</string>
+    <string name="stable_wallpaper_label">Sidekick Stable</string>
+    <string name="stable_wallpaper_description">Your Stable\'s open playground, moving on your home screen and following the time of day</string>
+    <string name="stable_wallpaper_empty">Open Sidekick to bring your Stable here.</string>
+    <string name="stable_dream_label">Sidekick Stable</string>
+    <string name="tile_label">Crit verdict</string>
+    <string name="fgs_reason">Shows whether the next Habitica task will crit and re-reads it when the Habitica app closes.</string>
+    <!-- MainActivity: the page never said it was ready (an Android System WebView too old or broken) -->
+    <string name="stuck_title">Sidekick didn\'t start</string>
+    <string name="stuck_body">Android draws this app\'s screens with its WebView, and they didn\'t appear. This phone has %1$s, version %2$s.</string>
+    <string name="stuck_play">Updating it usually fixes this. On a phone with Google Play, tap Update WebView.</string>
+    <string name="stuck_no_play">Without Google Play: install the phone\'s system updates, or update the WebView from the app store the phone came with (on Huawei, AppGallery\'s Huawei WebView). Aurora Store can also update Android System WebView without a Google account.</string>
+    <string name="stuck_update">Update WebView</string>
+    <string name="stuck_retry">Try again</string>
+</resources>

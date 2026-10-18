@@ -1,0 +1,60 @@
+/* ---------------------------------------------------------------- full-screen dialog (Settings → Notification) */
+.screen { position: fixed; inset: 0; z-index: 28; background: var(--bg); overflow: auto; overscroll-behavior: contain; transform: translateY(100%); transition: transform var(--t-medium) var(--ease-out); will-change: transform; padding-bottom: calc(24px + var(--safe-bottom)); }
+.screen.open { transform: none; transition-timing-function: var(--ease-in); }
+body.screen-open { overflow: hidden; }
+.screen-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 16px; min-height: calc(56px + var(--safe-top)); padding: var(--safe-top) calc(4px + var(--safe-right)) 0 calc(4px + var(--safe-left)); background: var(--primary); color: var(--on-primary); box-shadow: var(--z4); }
+.screen-title { font-size: 20px; line-height: 28px; font-weight: 500; margin: 0; letter-spacing: .0125em; }
+.screen-body { max-width: 640px; margin: 0 auto; padding: 8px 8px 0; }
+@media (prefers-reduced-motion: reduce) { .screen, .screen.open { transition: none; } }
+
+/* the notification preview: an Android 9 notification, white or dark like the phone's shade */
+.np-wrap { padding: 8px 0 4px; }
+.np-caption { color: var(--text-2); font-size: 12px; padding: 0 8px 8px; }
+.np { --np-bg: #FFFFFF; --np-text: rgba(0,0,0,.87); --np-text-2: rgba(0,0,0,.6); background: var(--np-bg); color: var(--np-text); border-radius: 2px; box-shadow: var(--z2); padding: 12px 16px 4px; cursor: pointer; position: relative; overflow: hidden; outline-offset: 2px; }
+:root[data-theme="dark"] .np { --np-bg: #424242; --np-text: #FFFFFF; --np-text-2: rgba(255,255,255,.7); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .np { --np-bg: #424242; --np-text: #FFFFFF; --np-text-2: rgba(255,255,255,.7); } }
+.np.crit { --np-bg: var(--accent-dark); --np-text: rgba(0,0,0,.87); --np-text-2: rgba(0,0,0,.6); }
+.np-head { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; color: var(--np-text-2); }
+.np-small { width: 16px; height: 16px; color: var(--look); }
+.np.crit .np-small { color: rgba(0,0,0,.87); }
+.np-app { color: var(--look); font-weight: 500; }
+.np.crit .np-app { color: rgba(0,0,0,.87); }
+.np-chevron { width: 18px; height: 18px; margin-left: auto; }
+.np-title { font-weight: 500; font-size: 14px; line-height: 20px; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-text1 { color: var(--np-text-2); font-size: 14px; line-height: 20px; padding-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-rows { padding-top: 8px; }
+.np-row { display: flex; align-items: center; gap: 16px; min-height: 32px; }
+.np-row.arrive { animation: np-arrive var(--t-medium) var(--ease-in); }
+@keyframes np-arrive { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.np-icon { width: 20px; height: 20px; color: #009688; }
+.np-row.tone-crit .np-icon { color: #FFA000; }
+.np.crit .np-row .np-icon { color: rgba(0,0,0,.6); }
+.np-row.tone-danger .np-icon { color: #E53935; }
+.np-main, .np-bars { flex: 1; min-width: 0; }
+.np-text { font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-bars { display: flex; gap: 12px; }
+.np-barcol { flex: 1; min-width: 0; }
+.np-label { font-size: 12px; line-height: 16px; color: var(--np-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-bar { height: 4px; border-radius: 2px; background: rgba(128,128,128,.2); margin: 3px 0 4px; overflow: hidden; }
+.np-fill { height: 100%; background: #009688; transform-origin: left; transition: transform var(--t-medium) var(--ease); }
+.np-bar.tone-crit .np-fill { background: #FFA000; }
+.np-bar.tone-danger .np-fill { background: #E53935; }
+.np-footer { font-size: 12px; line-height: 16px; color: var(--np-text-2); padding: 2px 0 0 36px; }
+.np-actions { display: flex; gap: 24px; padding: 12px 0 8px; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: .0892em; color: var(--look); }
+.np.crit .np-actions { color: rgba(0,0,0,.87); }
+@media (prefers-reduced-motion: reduce) { .np-row.arrive { animation: none; } .np-fill { transition: none; } }
+
+/* the list of lines: switch and drag handle per row */
+.np-list > li { display: flex; align-items: center; background: var(--surface); position: relative; }
+.np-list > li > .li { flex: 1; min-width: 0; padding-right: 4px; }
+.np-line-icon { color: var(--primary-text); }
+.np-line.off .np-line-icon { color: var(--text-3); }
+.np-extra { display: inline-block; margin-left: 8px; padding: 0 6px; border-radius: 10px; background: var(--tag-bg); color: var(--text-2); font-size: 11px; line-height: 18px; vertical-align: 2px; white-space: nowrap; }
+.np-sample { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-sample.example { font-style: italic; color: var(--text-3); }
+.np-handle { flex: none; width: 48px; align-self: stretch; border: 0; background: none; color: var(--text-3); cursor: grab; touch-action: none; display: flex; align-items: center; justify-content: center; }
+.np-handle:active { cursor: grabbing; }
+.np-list.sorting > li { transition: transform var(--t-short) var(--ease); }
+.np-list.sorting > li.dragging { transition: none; z-index: 3; box-shadow: var(--z8); }
+@media (prefers-reduced-motion: reduce) { .np-list.sorting > li { transition: none; } }
+body.screen-open #snackbar { bottom: calc(8px + var(--safe-bottom)); }

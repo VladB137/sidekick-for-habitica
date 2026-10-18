@@ -1,0 +1,46 @@
+/* ---------------------------------------------------------------- the talking character (Now's meadow, ui/talk.ts) */
+.talker {
+  position: relative; flex: none; display: block; padding: 0; margin: 0; border: 0; border-radius: 12px; background: none; color: inherit;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.hero-stage > .talker { margin: 0 4px -6px -4px; }
+.hero-stage > .talker > :first-child { margin: 0; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0,0,0,.22)); }
+.talker > :first-child { transform-origin: 50% 100%; }
+/* typing: the character bobs up and down in whole pixels, like the art; at a comma or a full stop it stands still */
+.talker.say > :first-child { animation: talk-bob .24s steps(1, end) infinite; }
+.talker.say.pause > :first-child { animation: none; }
+@keyframes talk-bob { 0% { transform: none; } 50% { transform: translateY(-3px); } }
+/* the tap: a squash and a stretch (two names, so a second tap restarts it) */
+.talker.boing0 > :first-child { animation: talk-boing0 .3s ease-out; }
+.talker.boing1 > :first-child { animation: talk-boing1 .3s ease-out; }
+@keyframes talk-boing0 { 0% { transform: none; } 30% { transform: scale(1.08, .9); } 65% { transform: translateY(-3px) scale(.96, 1.06); } 100% { transform: none; } }
+@keyframes talk-boing1 { 0% { transform: none; } 30% { transform: scale(1.08, .9); } 65% { transform: translateY(-3px) scale(.96, 1.06); } 100% { transform: none; } }
+
+/* the avatar's mouth (ui/avatar.ts `mouth`): shut, the skin's own line shows; open, two by two pixels with a tongue */
+.avatar .mouth { position: absolute; display: none; width: 6px; height: 6px; background: #3B1C17; pointer-events: none; }
+.avatar .mouth::after { content: ''; position: absolute; left: 0; bottom: 0; width: 3px; height: 3px; background: #D96C74; }
+.talker.open .mouth { display: block; }
+
+/* three speech marks by the head flicker as it talks (a pet, a mount or a helmet has no mouth to see) */
+.talk-marks { position: absolute; left: 80%; top: 8px; width: 12px; height: 15px; display: none; pointer-events: none; }
+.talker.say .talk-marks { display: block; }
+.talk-marks i { position: absolute; left: 0; width: 9px; height: 3px; border-radius: 2px; background: #FFFBF2; box-shadow: 0 0 0 1.5px #241A10; transform-origin: 0 50%; }
+.talk-marks i:nth-child(1) { top: 0; transform: rotate(-35deg); }
+.talk-marks i:nth-child(2) { top: 6px; }
+.talk-marks i:nth-child(3) { top: 12px; transform: rotate(35deg); }
+.talker.say:not(.open) .talk-marks i { opacity: .45; }
+
+/* the line in the bubble: laid out whole from the start (the rest invisible), so typing never reflows it */
+.bubble .said { animation: said-in .18s ease-out; }
+.bubble .said-text { display: block; font-weight: 700; font-size: 17px; line-height: 23px; }
+.bubble .untyped { visibility: hidden; }
+/* the caret: a border on a word joiner, so it adds no width and no place to break the line */
+.bubble .said.typing .typed::after { content: '\2060'; border-right: 2px solid currentColor; margin-right: -2px; animation: caret .5s steps(1, end) infinite; }
+@keyframes caret { 50% { border-right-color: transparent; } }
+.bubble.back > * { animation: said-in .25s ease-out; }
+@keyframes said-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .talker > :first-child, .bubble .said, .bubble.back > *, .bubble .said.typing .typed::after { animation: none; }
+  .talk-marks { display: none; }
+}

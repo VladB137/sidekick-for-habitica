@@ -1,0 +1,183 @@
+/* ---------------------------------------------------------------- Stable
+   The stage covers the whole window under the app bar and the navigation (the playground draws its ground
+   inside the insets it is given, stable/host.ts). Full screen slides the chrome off the edges, so nothing is
+   resized and the canvas never re-allocates; leaving slides it back. */
+.stable { position: fixed; inset: 0; z-index: 1; }
+#app.on-stable main > .banner { position: relative; z-index: 2; }
+.stable-stage { position: absolute; inset: 0; overflow: hidden; background: var(--bg); touch-action: none; user-select: none; -webkit-user-select: none; }
+.stable-empty {
+  position: absolute; left: 0; right: 0; top: calc(56px + var(--safe-top)); bottom: calc(56px + var(--safe-bottom));
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0 32px; text-align: center; color: var(--text-2);
+}
+.stable-empty-icon { width: 64px; height: 64px; color: var(--text-3); margin-bottom: 8px; }
+.stable-empty-title { font-size: 20px; line-height: 28px; font-weight: 500; color: var(--text); }
+.stable-empty p { margin: 0; max-width: 320px; }
+.stable-hint {
+  position: absolute; left: 16px; right: 16px; margin: 0 auto; max-width: 360px; padding: 8px 16px; border-radius: var(--r);
+  background: var(--bubble); color: var(--bubble-ink); border: 2px solid var(--ol); box-shadow: var(--float); font: 700 14px/20px Nunito, sans-serif; text-align: center;
+}
+.stable-hint { transition: opacity var(--t-long) var(--ease); }
+.stable-hint.stable-hint-out { opacity: 0; }
+.stable-hint[hidden] { display: none; }
+.stable-full, .stable-toys, .stable-crit { position: absolute; z-index: 3; border: 0; cursor: pointer; transition: transform var(--t-medium) var(--ease); }
+/* the round buttons on the meadow are the app bar's: parchment, outlined, lifted by a soft drop */
+.stable-full, .stable-toys {
+  right: 16px; bottom: calc(56px + var(--safe-bottom) + 16px); width: 40px; height: 40px; border-radius: 50%; padding: 6px;
+  background: var(--bubble); color: var(--ol); border: 2px solid var(--ol); box-shadow: var(--float); display: flex;
+}
+/* the toy box sits left of the full-screen button, and only once a playground is there to play in */
+.stable-toys { right: 64px; display: none; }
+.stable-crit {
+  left: 50%; top: calc(var(--safe-top) + 12px); transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px;
+  min-height: 32px; padding: 0 14px 0 10px; border-radius: 16px; background: var(--accent); color: var(--ol);
+  font: 800 14px/20px Nunito, sans-serif; border: 2px solid var(--ol); box-shadow: var(--float); animation: fade-in var(--t-medium) var(--ease-in);
+}
+.stable-crit .icon { width: 18px; height: 18px; }
+/* full screen's way back, where the app bar's arrow was; level with the crit chip */
+.stable-exit {
+  position: absolute; z-index: 3; left: 16px; top: calc(var(--safe-top) + 8px); width: 40px; height: 40px; border: 2px solid var(--ol); border-radius: 50%;
+  padding: 6px; background: var(--bubble); color: var(--ol); box-shadow: var(--float); display: flex; cursor: pointer;
+  animation: fade-in var(--t-medium) var(--ease-in);
+}
+#app.stable-full .appbar-top { transform: translateY(-100%); box-shadow: none; }
+#app.stable-full .bottomnav { transform: translateY(100%); box-shadow: none; }
+#app.stable-full .stable-full { transform: translateY(56px); }
+/* a snackbar pushes the buttons up, as it would a floating button */
+body.has-snack #app:not(.stable-full) .stable-full, body.has-snack #app:not(.stable-full) .stable-toys { transform: translateY(-56px); }
+body.has-snack #app.stable-full .stable-stage ~ .stable-full, body.has-snack #app.stable-full .stable-stage ~ .stable-toys { transform: none; }
+/* with the navigation slid away, a snackbar sits on the bottom edge (#snackbar follows #app in <body>; no :has() before Chrome 105) */
+#app.stable-full ~ #snackbar { bottom: calc(8px + var(--safe-bottom)); }
+@media (max-width: 599px) { #app.stable-full ~ #snackbar { bottom: var(--safe-bottom); } }
+
+/* the Stable's own controls (stable/chrome.ts): a toolbar under the app bar, the residents row over the navigation.
+   They sit inside the stage at the chrome's insets (--pg-top, --pg-bottom) and slide away in full screen.
+   The toolbar is no band: like the app bar above it, its controls float on the meadow as outlined parchment pills and
+   round buttons, lined up under the app bar's. The row is a tray rising over the grass, as the other screens' sheet does. */
+.pg-bar, .pg-row { position: absolute; left: 0; right: 0; z-index: 2; transition: transform var(--t-medium) var(--ease), visibility var(--t-medium); }
+.pg-bar { top: var(--pg-top, 0); height: 48px; max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+.pg-row {
+  bottom: var(--pg-bottom, 0); height: 64px; display: flex; align-items: center; gap: 6px; padding: 0 10px; overflow-x: auto; scrollbar-width: none; touch-action: pan-x;
+  background: var(--surface); border-top: var(--bw) solid var(--ol); border-radius: var(--r) var(--r) 0 0;
+}
+/* on the Stable the app bar's row has no edge of its own (the meadow runs on under it), so nothing is drawn between it and the toolbar */
+#app.on-stable .appbar.meadow .appbar-top { border-bottom: 0; border-radius: 0; }
+.pg-row::-webkit-scrollbar { display: none; }
+.stable-stage.pg-full .pg-bar { transform: translateY(calc(-100% - var(--pg-top, 0px) - 8px)); visibility: hidden; }
+.stable-stage.pg-full .pg-row { transform: translateY(calc(100% + var(--pg-bottom, 0px) + 8px)); visibility: hidden; }
+.pg-switch, .barn-bar > .pg-name, .pg-count { background: var(--bubble); color: var(--bubble-ink); border: 2px solid var(--ol); box-shadow: var(--float); }
+.pg-switch { display: inline-flex; align-items: center; gap: 2px; min-width: 0; height: 40px; padding: 0 8px 0 16px; border-radius: 20px; font: 800 16px/22px Nunito, sans-serif; cursor: pointer; position: relative; overflow: hidden; }
+.pg-switch .icon { color: var(--ol); flex: none; }
+.pg-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.barn-bar > .pg-name { min-width: 0; height: 40px; padding: 0 16px; border-radius: 20px; font: 800 16px/36px Nunito, sans-serif; }
+.pg-count { margin-left: auto; flex: none; height: 26px; padding: 0 10px; border-radius: 13px; font: 700 12px/22px Nunito, sans-serif; font-variant-numeric: tabular-nums; }
+.pg-bar .btn-icon { width: 40px; height: 40px; min-width: 40px; padding: 6px; background: var(--bubble); color: var(--ol); border: 2px solid var(--ol); box-shadow: var(--float); }
+.pg-bar .btn-icon .ripple, .pg-switch .ripple { background: rgba(0,0,0,.12); }
+/* chips and tiles are <button>s: centred with flex, since Chrome 67 lays a button out as a block whatever its display: grid says */
+.pg-chip { position: relative; flex: none; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--ol); padding: 0; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+.pg-chip.add { background: transparent; border: 2px dashed var(--text-3); color: var(--text-2); }
+.pg-row > div { flex: none; }
+/* the mount the player rides: a saddle badge on its chip (§07) */
+.pg-row > div.ridden { position: relative; }
+.pg-saddle { position: absolute; right: -2px; bottom: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); color: var(--on-primary); border: 2px solid var(--ol); display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.pg-saddle .icon { width: 12px; height: 12px; }
+.cpic { position: relative; display: block; overflow: hidden; flex: none; }
+.cpic img { position: absolute; left: 0; max-width: none; image-rendering: pixelated; image-rendering: crisp-edges; pointer-events: none; }
+.pg-dissolve { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; }
+/* the postcard's shutter: a white blink over the meadow as it stops */
+.pg-flash { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 3; background: #fff; pointer-events: none; opacity: 0; animation: pg-flash 360ms var(--ease) both; }
+@keyframes pg-flash { from { opacity: .85; } to { opacity: 0; } }
+/* the postcard's preview: the whole card, never taller than about half the screen */
+.postcard-pic { display: block; max-width: 100%; max-height: 52vh; margin: 0 auto 8px; box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 1px rgba(0,0,0,.14); }
+.postcard p { margin: 0 0 8px; }
+/* plain picture, this week's or last week's almanac */
+.postcard-kinds { justify-content: center; margin: 0 0 10px; }
+.stable-stage .stable-hint { z-index: 2; }
+/* the full-screen button and the toy box ride above the residents row once the playground is there */
+.stable-stage.mounted ~ .stable-full, .stable-stage.mounted ~ .stable-toys { bottom: calc(56px + var(--safe-bottom) + 64px + 16px); }
+.stable-stage.mounted ~ .stable-toys { display: flex; }
+#app.stable-full .stable-stage.mounted ~ .stable-full, #app.stable-full .stable-stage.mounted ~ .stable-toys { transform: translateY(120px); }
+#app.on-stable.stage-mounted:not(.stable-full) ~ #snackbar { bottom: calc(56px + 64px + 8px + var(--safe-bottom)); }
+@media (max-width: 599px) { #app.on-stable.stage-mounted:not(.stable-full) ~ #snackbar { bottom: calc(56px + 64px + var(--safe-bottom)); } }
+/* inside the barn (stable/barn.ts): its stage over the playground's (which stops, keeping its size), its own bar
+   instead of the toolbar and the residents row; the full-screen button waits outside */
+.barn-canvas { position: absolute; top: 0; left: 0; }
+.stable-stage.pg-in-barn > .pg-canvas:not(.barn-canvas) { visibility: hidden; }
+.stable-stage.pg-in-barn > .pg-bar:not(.barn-bar), .stable-stage.pg-in-barn > .pg-row, .stable-stage.pg-in-barn > .stable-hint { display: none; }
+#app.in-barn .stable-full, #app.in-barn .stable-exit { display: none; }
+/* in full screen the barn keeps its own bar: its arrow is the way out */
+.stable-stage.pg-full .barn-bar { transform: none; visibility: visible; }
+#app.on-stable.stage-mounted.in-barn:not(.stable-full) ~ #snackbar { bottom: calc(56px + 8px + var(--safe-bottom)); }
+@media (max-width: 599px) { #app.on-stable.stage-mounted.in-barn:not(.stable-full) ~ #snackbar { bottom: calc(56px + var(--safe-bottom)); } }
+/* scene thumbnails: art pixels kept crisp */
+.scene-thumb { display: block; }
+.menu-art { flex: none; width: 64px; height: 36px; border-radius: 2px; overflow: hidden; background: var(--tag-bg); }
+.menu-art .scene-thumb { width: 64px; height: 36px; }
+.menu-item.two { height: auto; min-height: 56px; padding-top: 6px; padding-bottom: 6px; }
+.menu-label { display: grid; min-width: 0; }
+.menu-label small { font-size: 12px; line-height: 16px; color: var(--text-2); }
+.menu-check { margin-left: auto; color: var(--primary-text) !important; }
+.menu-divider { height: 1px; margin: 8px 0; background: var(--divider); }
+.menu.from-left { transform-origin: top left; }
+/* the creature sheet */
+.pg-sheet-head { display: flex; align-items: center; gap: 16px; padding: 0 0 12px; }
+.pg-sheet-art { flex: none; width: 72px; height: 72px; display: grid; place-items: center; background: var(--tag-bg); border-radius: 2px; overflow: hidden; }
+.pg-sheet .li .icon, .sheet .list .li .icon { color: var(--text-2); flex: none; }
+.li-btn[disabled] { color: var(--text-3); cursor: default; }
+.pg-sheet-note { margin: 0 0 8px; color: var(--text-2); }
+/* the toy box sheet (stable/toybox.ts): each toy's picture, ticked while out, and the playground's own toy */
+.toy-art { flex: none; width: 48px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.toy-pic { display: block; }
+.toy-box .li-title, .toy-box .li-sub { display: block; }
+.toy-box .li .toy-check.on { color: var(--primary-text); }
+.toy-own-head { padding: 16px 0 0; }
+.pg-grows .li-title, .pg-grows .li-sub { display: block; }
+.pg-grows-intro { margin: 0 0 8px; }
+.pg-grows-total { margin: 0 0 8px; }
+.pg-grows-total .li-title { display: block; margin-bottom: 4px; }
+.pg-grows-bar { height: 6px; margin: 6px 0 4px; }
+.pg-grows-bar > span { background: var(--primary); }
+/* the playground form */
+.pg-form-sub { margin: 2px 0 12px; font-size: 14px; color: var(--text-2); }
+.pg-sheet-who .li-sub { display: block; }
+.nm-who { display: flex; align-items: center; gap: 12px; }
+.nm-who .cpic { flex: none; }
+.nm-form .field { margin-top: 8px; }
+.nm-ideas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.nm-idea { height: 32px; padding: 0 12px; border: 0; border-radius: 16px; background: var(--tag-bg); color: var(--text); font: 400 14px Roboto, sans-serif; cursor: pointer; position: relative; overflow: hidden; }
+.nm-ideas-label { margin: 16px 0 8px; }
+.nm-plain { margin: 24px 0 0 -8px; }
+.sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.sc-tile { position: relative; padding: 0; border: 0; border-radius: 2px; overflow: hidden; background: var(--tag-bg); box-shadow: var(--z1); cursor: pointer; aspect-ratio: 4 / 3; }
+.sc-tile .scene-thumb { width: 100%; height: 100%; object-fit: cover; }
+.sc-tile span { position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 6px; font-size: 12px; line-height: 16px; color: #fff; background: rgba(0,0,0,.48); text-align: left; }
+.sc-tile[aria-checked="true"] { box-shadow: 0 0 0 2px var(--primary-text), var(--z1); }
+.sc-tile[aria-checked="true"]::after { content: ''; position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E") center/14px no-repeat; }
+/* the picker */
+.pk-dialog .fsd-body { padding: 0 0 calc(24px + var(--safe-bottom)); }
+.pk-dialog .fsd-body > * { max-width: none; }
+.pk-top { position: sticky; top: 0; z-index: 1; background: var(--bg); box-shadow: 0 1px 0 var(--divider); }
+.pk-tabs { display: flex; background: var(--primary); box-shadow: var(--z4); }
+.pk-tab { flex: 1; height: 48px; border: 0; background: transparent; color: rgba(255,255,255,.7); font: 500 14px Roboto, sans-serif; letter-spacing: .0892em; text-transform: uppercase; position: relative; cursor: pointer; overflow: hidden; }
+.pk-tab[aria-selected="true"] { color: #fff; }
+.pk-tab[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); }
+.pk-chosen { padding: 8px 12px 0; }
+.pk-tally { font-size: 12px; color: var(--text-2); padding: 0 4px 4px; }
+.pk-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-height: 32px; }
+.pk-chips::-webkit-scrollbar { display: none; }
+.pk-chip { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 4px 0 4px; border: 0; border-radius: 16px; background: var(--tag-bg); color: var(--text); font: 400 13px Roboto, sans-serif; cursor: pointer; position: relative; overflow: hidden; }
+.pk-chip .icon { width: 18px; height: 18px; color: var(--text-2); }
+.pk-search { display: flex; align-items: center; gap: 10px; margin: 8px 12px; height: 40px; padding: 0 12px; border-radius: 2px; background: var(--tag-bg); color: var(--text-3); }
+.pk-search-in { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text); font: 400 16px Roboto, sans-serif; outline: none; }
+.pk-pane { padding: 0 8px; }
+.pk-head { margin: 0; padding: 12px 6px 6px; font-size: 13px; font-weight: 500; color: var(--text-2); letter-spacing: .02em; }
+.pk-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 4px; }
+.pk-tile { position: relative; aspect-ratio: 1; border: 0; padding: 0; border-radius: 2px; background: var(--surface); box-shadow: var(--z1); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+.pk-tile.sel { background: var(--best-bg); box-shadow: inset 0 0 0 2px var(--primary-text); }
+.pk-tile.dim { opacity: .38; }
+.pk-tile[hidden], .pk-group[hidden] { display: none; }
+.pk-ck { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); display: none; place-items: center; }
+.pk-ck .icon { width: 14px; height: 14px; color: #fff; }
+.pk-tile.sel .pk-ck { display: grid; }
+.pk-where { position: absolute; left: 3px; bottom: 3px; max-width: calc(100% - 6px); padding: 0 4px; border-radius: 7px; background: var(--tag-bg); color: var(--text-2); font-size: 10px; line-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pk-where:empty { display: none; }
+.pk-none { margin: 24px 16px; color: var(--text-2); }

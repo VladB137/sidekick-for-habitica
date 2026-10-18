@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Stable live wallpaper (StableWallpaper.java): no settings screen, the app's Stable decides what it shows -->
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:thumbnail="@drawable/widget_stable_preview"
+    android:description="@string/stable_wallpaper_description" />

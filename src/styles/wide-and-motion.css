@@ -1,0 +1,10 @@
+@media (min-width: 600px) {
+  main { padding-left: calc(16px + var(--safe-left)); padding-right: calc(16px + var(--safe-right)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  /* busy indicators aren't decoration: without them a read shows no feedback at all */
+  .sync.spin .icon, .spin-slow { animation: spin 2s linear infinite !important; }
+  .ptr.spinning .ptr-svg { animation: ptr-turn 1.4s linear infinite !important; }
+  .progress::before { animation: indet 2.4s linear infinite !important; }
+}

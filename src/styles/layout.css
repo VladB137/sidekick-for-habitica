@@ -1,0 +1,35 @@
+/* ---------------------------------------------------------------- layout */
+main { max-width: 720px; margin: 0 auto; padding: 0 calc(8px + var(--safe-right)) calc(56px + 24px + var(--safe-bottom)) calc(8px + var(--safe-left)); }
+/* while a snackbar shows, the list can scroll its last row clear of it (a two-line snackbar is up to 72px tall) */
+body.has-snack main { padding-bottom: calc(56px + 8px + 72px + 16px + var(--safe-bottom)); }
+/* a new screen fades up into place (the same screen updated in place doesn't) */
+main[data-k] { animation: screen-in var(--t-medium) var(--ease-in); }
+@keyframes screen-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes fade-in { from { opacity: 0; } }
+/* reference cards rest low; the one card that answers "what now" (.action) stands up from the page (B5) */
+.card { background: var(--surface); border-radius: 2px; box-shadow: var(--z1); margin: 12px 0; overflow: hidden; }
+.card.action { box-shadow: var(--z4); }
+.card-head { display: flex; align-items: center; gap: 12px; padding: 16px 16px 4px; }
+.card-title { font-size: 20px; line-height: 28px; font-weight: 500; letter-spacing: .0125em; flex: 1; }
+.card-sub { color: var(--text-2); font-size: 14px; padding: 0 16px 8px; }
+.card-body { padding: 8px 16px 16px; }
+.card-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 8px; }
+.card-actions.start { justify-content: flex-start; }
+.card-actions.center { justify-content: center; }
+.muted { color: var(--text-2); }
+.small { font-size: 12px; line-height: 16px; }
+.mono { font-family: ui-monospace, 'Roboto Mono', Menlo, monospace; font-size: 12px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.subheader { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--text-2); padding: 16px 16px 8px; letter-spacing: .0071em; }
+.intro { margin: 8px 8px 0; }
+.accent-icon { color: var(--setup); }
+.crit-text { background: var(--accent); color: var(--on-accent); font-weight: 500; padding: 0 6px; border-radius: 2px; }
+details > summary { cursor: pointer; list-style: none; }
+/* a folding card: the closed header is evenly padded; the chevron turns, the body fades in */
+.fold > summary.card-head { padding: 16px; }
+.fold[open] > summary.card-head { padding-bottom: 4px; }
+.fold .chev { transition: transform var(--t-medium) var(--ease); color: var(--text-2); }
+.fold[open] .chev { transform: rotate(180deg); }
+.fold[open] > summary + * { animation: fold-in var(--t-medium) var(--ease-in); }
+@keyframes fold-in { from { opacity: 0; transform: translateY(-8px); } }
+details > summary::-webkit-details-marker { display: none; }

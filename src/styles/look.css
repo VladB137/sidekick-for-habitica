@@ -1,0 +1,206 @@
+/* Look S+I (prototype): S's meadow app bar (your avatar in the open playground's meadow, saying the verdict in a
+   speech bubble, the content on a sheet rising over the grass) with I's parchment, thick outlines, pressed shadows,
+   solid coloured card headers and coloured tabs. Nunito throughout, heavy for titles. Amber still means one thing: the next task crits
+   (the bubble, the status bar). Offline greys the meadow out and the bubble turns Blue Grey. */
+:root {
+  --ol: #241A10; --ol-soft: rgba(58,46,31,.25); --bw: 3px; --sh: 5px; --r: 14px;
+  --h1: #00897B; --h1f: #FFFFFF; --h2: #D32F45; --h2f: #FFFFFF; --h3: #2160D8; --h3f: #FFFFFF; --h4: #2E8B3A; --h4f: #FFFFFF; --h5: #5D4F3F; --h5f: #FFFFFF;
+  --primary: #00897B; --primary-dark: #00695C; --primary-text: #00695C;
+  --bg: #F1E6CC; --sheet: #F1E6CC; --surface: #FFFBF2; --card-line: rgba(58,46,31,.3);
+  --text: #241A10; --text-2: rgba(36,26,16,.68); --text-3: rgba(36,26,16,.45);
+  --divider: rgba(58,46,31,.15); --tag-bg: rgba(58,46,31,.08); --best-bg: #E3F2EC;
+  --bubble: #FFFBF2; --bubble-ink: #241A10;
+  --title-font: Nunito, sans-serif;
+  /* one lift for everything floating on the meadow: a soft drop, not a solid slab */
+  --float: 0 3px 0 rgba(0,0,0,.22);
+}
+@media (prefers-color-scheme: dark) {
+  :root:root:not([data-theme="light"]) {
+    --ol: #0B0906; --ol-soft: rgba(0,0,0,.4);
+    --h1: #00796B; --h2: #B0263A; --h3: #1C51B8; --h4: #25732F; --h5: #4A3F33;
+    --bg: #1E1A15; --sheet: #1E1A15; --surface: #2A241C; --card-line: rgba(255,240,210,.16);
+    --text: #F6EEDC; --text-2: rgba(246,238,220,.72); --text-3: rgba(246,238,220,.5);
+    --divider: rgba(255,240,210,.12); --tag-bg: rgba(255,240,210,.09); --best-bg: rgba(128,203,196,.12);
+    --primary-text: #7FD1C2; --bubble: #FFFBF2; --bubble-ink: #241A10;
+  }
+}
+:root:root[data-theme="dark"] {
+  --ol: #0B0906; --ol-soft: rgba(0,0,0,.4);
+  --h1: #00796B; --h2: #B0263A; --h3: #1C51B8; --h4: #25732F; --h5: #4A3F33;
+  --bg: #1E1A15; --sheet: #1E1A15; --surface: #2A241C; --card-line: rgba(255,240,210,.16);
+  --text: #F6EEDC; --text-2: rgba(246,238,220,.72); --text-3: rgba(246,238,220,.5);
+  --divider: rgba(255,240,210,.12); --tag-bg: rgba(255,240,210,.09); --best-bg: rgba(128,203,196,.12);
+  --primary-text: #7FD1C2; --bubble: #FFFBF2; --bubble-ink: #241A10;
+}
+
+body, button, input, select, textarea, .menu-item, .navitem, .pg-switch, .stable-hint, .stable-crit {
+  font-family: Nunito, 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0;
+}
+body { font-size: 15px; line-height: 21px; }
+
+/* ---- the meadow bar */
+.appbar.meadow {
+  background: #8FD0EA var(--meadow) center bottom / cover no-repeat; color: var(--bubble-ink);
+  image-rendering: pixelated; box-shadow: none; padding-top: calc(64px + var(--safe-top));
+}
+.appbar.meadow.offline { filter: none; }
+.appbar.meadow.offline::before { content: ''; position: absolute; inset: 0; background: rgba(69,90,100,.55); pointer-events: none; }
+.appbar.meadow .appbar-top { background: transparent; image-rendering: auto; }
+/* scrolled, or any screen but Now: the row keeps a slice of the sky behind it */
+.appbar.meadow.collapsed .appbar-top, .appbar.meadow.lifted .appbar-top {
+  background: #8FD0EA var(--meadow) center top / cover no-repeat; image-rendering: pixelated;
+  border-bottom: var(--bw) solid var(--ol); border-radius: 0 0 var(--r) var(--r); box-shadow: 0 3px 0 rgba(0,0,0,.18);
+}
+.appbar.meadow.offline.collapsed .appbar-top, .appbar.meadow.offline.lifted .appbar-top { background-color: #455A64; }
+.appbar.meadow.offline.collapsed .appbar-top::before { content: ''; position: absolute; inset: 0; background: rgba(69,90,100,.55); }
+.appbar.meadow .appbar-row { height: 64px; padding: 0 12px; position: relative; }
+.appbar.meadow .appbar-title { flex: 0 1 auto; height: auto; }
+/* the title is a pill as tall as the round buttons beside it (40px), and each of its two titles hugs its own words
+   (they share one grid cell, which is as wide as the longer one) */
+.appbar.meadow .appbar-title > span {
+  font: 800 17px/22px var(--title-font); padding: 7px 16px; border-radius: 20px; background: var(--bubble); color: var(--ol);
+  border: 2px solid var(--ol); box-shadow: var(--float); justify-self: start; max-width: 100%;
+}
+.appbar.meadow.crit .appbar-title .compact { background: var(--accent); }
+.appbar.meadow.offline .appbar-title > span, .appbar.meadow.offline .btn-icon { background: #455A64; color: #FFFFFF; }
+.appbar.meadow.danger .appbar-title > span { background: #C62828; color: #FFFFFF; }
+.appbar.meadow .btn-icon { width: 40px; height: 40px; min-width: 40px; padding: 6px; margin-left: 6px; background: var(--bubble); color: var(--ol); border: 2px solid var(--ol); box-shadow: var(--float); }
+/* History's Back button starts the row, as far from the edge as the buttons at the other end */
+.appbar.meadow .appbar-row > .btn-icon:first-child { margin-left: 0; }
+.appbar.meadow .btn-icon + .appbar-title { margin-left: 6px; }
+/* the buttons keep to the right: the margin is on the first one after the title, since the flex-gap fallback (Chrome < 84) replaces the title's own right margin */
+.appbar.meadow .appbar-title + * { margin-left: auto; }
+.appbar.meadow .ripple { background: rgba(0,0,0,.12); }
+
+.appbar.meadow .hero { padding: 4px 16px 40px; position: relative; image-rendering: auto; }
+.hero-stage { display: flex; align-items: flex-end; min-height: 150px; }
+.hero-stage > .avatar { flex: none; margin: 0 4px -6px -4px; }
+/* the bubble is as wide as its text (ui/talk.ts fitBubble narrows it to the longest line once wrapped) */
+.bubble {
+  position: relative; flex: 0 1 auto; min-width: 0; margin: 0 0 36px 14px; padding: 10px 14px 12px; border-radius: 20px;
+  background: var(--bubble); color: var(--bubble-ink); border: var(--bw) solid var(--ol); box-shadow: var(--float);
+}
+.bubble::after {
+  content: ''; position: absolute; left: -11px; bottom: 18px; width: 16px; height: 16px; background: inherit;
+  border-left: var(--bw) solid var(--ol); border-bottom: var(--bw) solid var(--ol); border-bottom-left-radius: 3px; transform: rotate(45deg);
+}
+.appbar.crit .bubble { background: var(--accent); }
+/* the crit reveal (main.ts revealCrit) acts on the bubble: the meadow stays, the bubble pops as it turns amber */
+#app.revealing .appbar.meadow.crit { background: #8FD0EA var(--meadow) center bottom / cover no-repeat; animation: none; }
+#app.revealing .appbar.meadow.crit .appbar-top { background: transparent; }
+#app.revealing .appbar.meadow.crit.collapsed .appbar-top, #app.revealing .appbar.meadow.crit.lifted .appbar-top { background: #8FD0EA var(--meadow) center top / cover no-repeat; }
+#app.revealing .appbar.meadow.crit .bubble, #app.revealing .appbar.meadow.crit.collapsed .appbar-title .compact { animation: crit-pop .4s var(--ease) both; }
+.bubble { transform-origin: 0 100%; }
+@keyframes crit-pop { 0% { transform: scale(.9); background-color: var(--bubble); } 40% { transform: scale(1.06); } 100% { transform: none; } }
+.appbar.offline .bubble { background: #455A64; color: #FFFFFF; }
+.appbar.danger .bubble { background: #C62828; color: #FFFFFF; }
+.appbar.meadow .overline { font: 700 13px/18px Nunito, sans-serif; letter-spacing: 0; text-transform: none; opacity: .75; }
+.appbar.meadow .headline { font: 800 28px/32px var(--title-font); margin: 2px 0 4px; }
+.appbar.meadow .headline b { font-weight: 800; }
+.appbar.meadow .hero-sub { font: 600 14px/19px Nunito, sans-serif; }
+.appbar.meadow .chips { margin-top: -26px; }
+.appbar.meadow .chip { background: var(--bubble); color: var(--ol); font: 700 13px Nunito, sans-serif; border: 2px solid var(--ol); box-shadow: var(--float); }
+.appbar.meadow .chip.hit { background: var(--accent); }
+.appbar.meadow .hero-status {
+  display: inline-block; margin-top: 8px; padding: 3px 10px 3px 24px; border-radius: 12px; position: relative;
+  background: var(--bubble); color: var(--ol); font: 700 12px/16px Nunito, sans-serif; border: 2px solid var(--ol); box-shadow: var(--float);
+}
+.appbar.meadow .hero-status::before { content: ''; position: absolute; left: 10px; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.appbar.meadow.crit .hero-status::before { background: var(--accent-dark); }
+.appbar.meadow.checking .hero-status::before { background: #90A4AE; }
+/* every screen but Now has no hero: the bar is the whole header, so the page starts under its outline instead of
+   rising 28px into it, and the bar's rounded corners show the page, not a sliver of meadow */
+.appbar.meadow.bare { background: transparent; padding-top: calc(64px + var(--bw) + var(--safe-top)); }
+.appbar.meadow.bare::before { display: none; }
+.appbar.meadow.bare + main { margin-top: 0; border-top: 0; border-radius: 0; }
+/* Stable: the playground is the meadow already; the bar floats over it */
+#app.on-stable .appbar.meadow, #app.on-stable .appbar.meadow .appbar-top { background: transparent; box-shadow: none; }
+
+/* ---- the sheet: content rises over the grass */
+main { position: relative; z-index: 1; margin-top: -28px; background: var(--sheet); border-radius: 28px 28px 0 0; border-top: var(--bw) solid var(--ol); padding-top: 6px; min-height: calc(100vh - 120px); }
+#app.on-stable main { margin-top: 0; background: transparent; }
+#app.on-stable main { border-top: 0; }
+
+/* ---- I's cards: outlined, pressed, a solid coloured header whose colour says what the card is about.
+   Teal: crits and what to do next (the default). Raspberry: HP, streaks and quests at stake. Blue: your character,
+   numbers and how the app reads. Green: the Stable and the day. Brown: account and housekeeping. Blue grey: offline.
+   Cards are matched by their data-k, or by a hue-* class where they have none. */
+main .card { --cc: var(--h1f); --ccbg: var(--h1); }
+main .card.hue-red, main .card.danger-card, main .card[data-k="streaks"], main .card[data-k="boss"] { --cc: var(--h2f); --ccbg: var(--h2); }
+main .card.hue-blue, main .card[data-k="class-card"], main .card[data-k="you"], main .card[data-k="stat-bars"], main .card[data-k="numbers"],
+main .card[data-k="history-card"], main .card[data-k="journal"], main .card[data-k="hist-dailies"], main .card[data-k="hist-habits"],
+main .card[data-k="np-lines"], main .card[data-k="np-order"], main .card[data-k="np-widget"], main .card[data-k="phone"] { --cc: var(--h3f); --ccbg: var(--h3); }
+main .card.hue-green, main .card.stable-card, main .card.startday, main .card[data-k="feeding"], main .card[data-k="repeats"] { --cc: var(--h4f); --ccbg: var(--h4); }
+main .card.hue-brown, main .card[data-k="saving"], main .card[data-k="about"] { --cc: var(--h5f); --ccbg: var(--h5); }
+main .card.offline-card { --cc: #FFFFFF; --ccbg: #455A64; }
+.card { background: var(--surface); border-radius: var(--r); border: var(--bw) solid var(--ol); box-shadow: 0 var(--sh) 0 var(--ol); margin: 14px 4px; }
+.card.action { box-shadow: 0 calc(var(--sh) + 1px) 0 var(--ol); }
+main .card .card-head { background: var(--ccbg); color: var(--cc); padding: 12px 16px; margin-bottom: 8px; border-bottom: var(--bw) solid var(--ol); }
+main .card .card-head .card-title { color: inherit; }
+/* a folding card's header is the same height open or closed; closed, the card's own outline closes it */
+main .fold > summary.card-head, main .fold[open] > summary.card-head, main .fold:not([open]) > summary.card-head { padding: 12px 16px; }
+main .fold:not([open]) > summary.card-head { margin-bottom: 0; border-bottom: 0; }
+main .card .card-head > .icon:first-child { width: 34px; height: 34px; padding: 6px; border-radius: 50%; background: rgba(255,255,255,.22); color: inherit; }
+main .card .card-head .btn-icon, main .card .card-head .muted, main .card .card-head .chev, main .card .card-head .fold-count { color: inherit; opacity: 1; }
+/* a folding card's head (class tips) is a header like the rest */
+main .card > .fold-head { background: var(--ccbg); color: var(--cc); padding: 12px 16px; margin-bottom: 8px; border-bottom: var(--bw) solid var(--ol); }
+main .card > .fold-head .card-title, main .card > .fold-head .count { color: inherit; }
+main .card > .fold-head > .icon:first-child { width: 34px; height: 34px; padding: 6px; border-radius: 50%; background: rgba(255,255,255,.22); color: inherit; }
+.card-title, .subheader, .fold-head, .login-hero h1, .ob h1, .ob h2, .stable-empty-title { font-family: var(--title-font); font-weight: 800; letter-spacing: 0; }
+.card-title { font-size: 19px; line-height: 26px; }
+.subheader { color: var(--primary-text); font-size: 15px; }
+.btn { font: 800 15px/36px var(--title-font); letter-spacing: .02em; text-transform: none; border-radius: 999px; }
+.btn.btn-dense { font-size: 13px; line-height: 32px; }
+.btn-raised { padding: 0 18px; border: var(--bw) solid var(--ol); box-shadow: 0 3px 0 var(--ol); }
+.btn-raised:active { box-shadow: 0 1px 0 var(--ol); transform: translateY(2px); }
+.banner { border-radius: var(--r); margin: 12px 4px; border: var(--bw) solid var(--ol); box-shadow: 0 3px 0 var(--ol); }
+.chip, .tag, .out { border-radius: 999px; }
+.crit-text { border-radius: 8px; }
+.bar { height: 10px; border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--ol-soft); }
+
+/* ---- nav: the open tab is a solid block edge to edge, in its section's colour */
+.bottomnav { background: var(--surface); border-top: var(--bw) solid var(--ol); box-shadow: none; }
+.navitem { font: 800 12px/16px var(--title-font); color: var(--text-2); max-width: none !important; }
+.navitem[aria-label="Now"] { --tab: var(--h1); } .navitem[aria-label="Stable"] { --tab: var(--h4); }
+.navitem[aria-label="Tasks"] { --tab: var(--h3); } .navitem[aria-label="Stats"] { --tab: var(--h2); } .navitem[aria-label="Settings"] { --tab: var(--h5); }
+/* outlined on the sides and bottom only: the bar's own top border is its top edge, so every side is one --bw thick */
+.shifting .navitem.active {
+  background: var(--tab); color: #FFFFFF;
+  box-shadow: inset var(--bw) 0 0 var(--ol), inset calc(-1 * var(--bw)) 0 0 var(--ol), inset 0 calc(-1 * var(--bw)) 0 var(--ol);
+}
+.bottomnav .navitem.active .ripple { background: rgba(255,255,255,.3); }
+
+/* the avatar stands in the meadow; the You card keeps the numbers */
+.you > .avatar { display: none; }
+.mono { font-family: Nunito, sans-serif; font-weight: 700; font-size: 13px; }
+
+/* ---- intro, mode choice, login: the same meadow and sheet */
+.ob, .mode-choice { background: var(--sheet); color: var(--text); }
+.ob-brand { font: 800 20px/56px var(--title-font); color: var(--text); }
+.ob-title { font: 800 26px/32px var(--title-font); }
+.ob-skip, .ob-next { color: var(--primary-text); }
+.ob-dot::before { background: var(--card-line); }
+.ob-dot.on::before { background: var(--primary); }
+.ob :focus-visible, .mode-choice :focus-visible { outline-color: var(--focus); }
+.ob-bar { border-radius: 20px; background: var(--bubble); color: var(--bubble-ink); border: var(--bw) solid var(--ol); box-shadow: var(--float); }
+.ob-bar.crit { background: var(--accent); }
+.ob-bar.offline { background: #455A64; color: #FFFFFF; }
+.ob-headline { font: 800 30px/36px var(--title-font); }
+/* the outline is a shadow, not a border, so the 16:9 box is the picture's on every WebView (old-webview.css sizes it by padding) */
+.ob-meadow { border-radius: var(--r); overflow: hidden; box-shadow: 0 0 0 var(--bw) var(--ol), 0 calc(var(--sh) + var(--bw)) 0 var(--ol); }
+.login-hero {
+  background: #8FD0EA var(--meadow) center bottom / cover no-repeat; image-rendering: pixelated; color: var(--ol);
+  padding: 64px 20px 72px; border-radius: 0 0 28px 28px;
+}
+.login-hero h1, .login-hero p { display: table; background: rgba(255,255,255,.9); border-radius: 18px; padding: 4px 14px; image-rendering: auto; }
+.login-hero h1 { font: 800 30px/40px var(--title-font); border: 2px solid var(--ol); box-shadow: var(--float); margin-bottom: 8px; }
+.login-hero p { font: 700 14px/20px Nunito, sans-serif; }
+
+/* ---- the snackbar floats like the bubbles: outlined, rounded, clear of the edges */
+#snackbar { background: #3A3128; color: #FFF8EC; border: 2px solid var(--ol); border-radius: var(--r); box-shadow: var(--float); }
+#snackbar.crit { background: #3E2723; }
+@media (max-width: 599px) { #snackbar { left: 8px; right: 8px; margin-bottom: 8px; border-radius: var(--r); } }
+
+/* tap-to-explain words: a dotted line under them drawn as a border, which sits in the same place on every WebView
+   (text-underline-offset is Chrome 87; without it Chrome 66-86 put Nunito's underline elsewhere) */
+.term { text-decoration: none; border-bottom: 1px dotted currentColor; }

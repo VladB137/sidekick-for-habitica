@@ -1,0 +1,69 @@
+/* ---------------------------------------------------------------- login */
+.login { max-width: 480px; margin: 0 auto; padding: calc(24px + var(--safe-top)) 16px 32px; }
+.login-hero { background: var(--primary); color: #fff; margin: -24px -16px 16px; padding: 48px 24px 24px; }
+.login-hero h1 { font-size: 34px; font-weight: 400; margin: 0 0 4px; }
+.login-hero p { margin: 0; font-size: 16px; }
+.steps { margin: 4px 0 8px; padding-left: 20px; }
+.steps li { margin: 4px 0; }
+
+/* ---------------------------------------------------------------- intro (before login)
+   A full-bleed Teal 700 pager. Swiping is native scroll snapping; the pictures drift a little
+   slower than the page where scroll-driven animations exist (compositor only, none with reduced motion). */
+.ob, .mode-choice { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--primary); color: #FFFFFF;
+  padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+.ob-brand { flex: none; height: 56px; line-height: 56px; padding: 0 16px; font-size: 20px; font-weight: 500; letter-spacing: .0125em; }
+.ob-track { flex: 1; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; outline: none; }
+.ob-track::-webkit-scrollbar { display: none; }
+.ob-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; scroll-snap-stop: always; display: flex; flex-direction: column; padding: 0 24px; padding: 0 max(24px, calc((100% - 440px) / 2)); overflow-y: auto; }
+.ob-art { flex: 1 0 auto; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 8px 0 24px; }
+.ob-text { flex: none; min-height: 232px; text-align: center; padding-bottom: 16px; }
+.ob-title { margin: 0 0 12px; font-size: 24px; line-height: 32px; font-weight: 400; }
+.ob-body { margin: 0; font-size: 16px; line-height: 24px; }
+.ob-start { margin-top: 24px; min-width: 200px; height: 40px; }
+.ob-nav { flex: none; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+.ob-skip, .ob-next { color: #FFFFFF; transition: opacity var(--t-short) var(--ease), visibility var(--t-short); }
+.ob-skip { min-width: 88px; }
+.ob-next { margin-left: 40px; } /* as wide as Skip, so the dots sit in the middle */
+.ob.last .ob-skip, .ob.last .ob-next { opacity: 0; visibility: hidden; }
+.ob-dots { display: flex; }
+.ob-dot { width: 20px; height: 48px; border: 0; padding: 0; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.ob-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.5); transition: transform var(--t-short) var(--ease), background-color var(--t-short); }
+.ob-dot.on::before { background: #FFFFFF; transform: scale(1.25); }
+.ob :focus-visible, .mode-choice :focus-visible { outline-color: #FFFFFF; }
+
+/* the pictures: bits of the real interface with made-up numbers */
+.ob-bar { width: 100%; max-width: 320px; padding: 12px 16px 14px; border-radius: 2px; background: var(--primary); color: #FFFFFF; text-align: left; }
+.ob-bar.crit { background: var(--accent); color: var(--on-accent); }
+.ob-bar.offline { background: #455A64; }
+.ob-headline { font-size: 34px; line-height: 40px; margin: 2px 0; }
+.ob-headline b { font-weight: 500; }
+.ob-sub { font-size: 14px; }
+.ob-hero { box-shadow: var(--z8); padding-bottom: 16px; }
+.ob-bar .chip { background: rgba(0,0,0,.1); }
+.ob-card { width: 100%; max-width: 320px; background: var(--surface); color: var(--text); border-radius: 2px; box-shadow: var(--z8); text-align: left; overflow: hidden; }
+.ob-card-title { font-size: 16px; font-weight: 500; padding: 14px 16px 10px; }
+.ob-opt { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--divider); font-size: 14px; line-height: 20px; }
+.ob-opt .icon { color: var(--primary-text); }
+.ob-tier { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--text-2); }
+.ob-stack { display: flex; flex-direction: column; gap: 8px; padding: 8px; }
+.ob-stack .ob-bar { max-width: none; padding: 8px 12px 10px; }
+.ob-stack .ob-headline { font-size: 24px; line-height: 32px; }
+.ob-notif { width: 100%; max-width: 320px; background: var(--surface); color: var(--text); border-radius: 2px; box-shadow: var(--z8); padding: 12px 16px; text-align: left; }
+.ob-notif-app { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-2); }
+.ob-notif-app .icon { width: 16px; height: 16px; color: var(--primary-text); }
+.ob-notif-title { font-size: 14px; font-weight: 500; margin-top: 6px; }
+.ob-notif-text { font-size: 14px; color: var(--text-2); }
+.ob-tiles { display: flex; gap: 24px; }
+.ob-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; }
+.ob-tile .icon { box-sizing: content-box; padding: 12px; border-radius: 50%; background: rgba(255,255,255,.2); }
+.ob-tile.on .icon { background: var(--accent); color: var(--on-accent); }
+.ob-appicon { width: 160px; height: 160px; border-radius: 35px; box-shadow: var(--z8); }
+@supports (animation-timeline: view()) {
+  .ob-art > * { animation: ob-drift linear both; animation-timeline: view(inline); }
+  @keyframes ob-drift { from { transform: translateX(30%); opacity: 0; } 50% { transform: none; opacity: 1; } to { transform: translateX(-30%); opacity: 0; } }
+}
+/* the login screen comes up from the intro rather than replacing it in one frame */
+.login.enter { animation: ob-enter var(--t-medium) var(--ease-in) both; }
+@keyframes ob-enter { from { opacity: 0; transform: translateY(16px); } }
+/* "Try it without an account" under Get started (demo.ts) */
+.ob-try { display: block; margin: 8px auto 0; color: inherit; }

@@ -1,0 +1,58 @@
+/* ---------------------------------------------------------------- you: avatar, level and bars (Now) */
+.avatar { position: relative; flex: none; image-rendering: pixelated; overflow: visible; }
+.avatar img { position: absolute; image-rendering: pixelated; user-select: none; pointer-events: none; }
+
+.you { display: flex; gap: 16px; padding: 16px; align-items: center; }
+.you .avatar { background: var(--hover); border-radius: 2px; }
+.you-main { flex: 1; min-width: 0; }
+.you-name { font-size: 20px; line-height: 28px; font-weight: 500; overflow-wrap: anywhere; }
+.you-sub { color: var(--text-2); font-size: 14px; margin-bottom: 8px; }
+.you .bars { gap: 6px 8px; font-size: 14px; }
+.you .bars .mono { text-align: right; }
+.you-next { color: var(--text-2); font-size: 14px; margin-top: 8px; }
+.fold-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.fold-head .card-title { flex: 1; }
+.fold-head .count { color: var(--text-2); font-size: 14px; }
+.avatar-stack { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+
+/* Stats: the four stats as stacked bars, the task crit chance as a dial */
+.crit-dial { display: flex; align-items: center; gap: 16px; padding: 0 16px 12px; }
+.dial { width: 64px; height: 64px; flex: none; }
+.dial circle { fill: none; stroke-width: 8; }
+.dial-track { stroke: var(--divider); }
+.dial-fill { stroke: var(--accent-dark); stroke-linecap: round; }
+.dial-num { font-size: 24px; line-height: 32px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.statbars { list-style: none; margin: 0; padding: 0 16px 8px; display: grid; gap: 10px; }
+.statbars li { display: grid; grid-template-columns: 36px 1fr 40px; align-items: center; gap: 8px; }
+.sb-name { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.sb-bar { display: flex; height: 12px; border-radius: 6px; background: var(--divider); overflow: hidden; }
+.sb-bar i { display: block; height: 100%; }
+.sb-total { text-align: right; font-variant-numeric: tabular-nums; }
+.sb-level { background: #80CBC4; } .sb-gear { background: var(--primary); } .sb-points { background: var(--accent-dark); } .sb-buffs { background: var(--mp); }
+.statbars + .heat-legend { padding: 0 16px 16px; }
+/* sections inside one folded card */
+.sub-sec + .sub-sec { border-top: 1px solid var(--divider); margin-top: 16px; padding-top: 8px; }
+.sub-title { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 500; margin: 8px 0; }
+.sub-title .icon { color: var(--text-2); font-size: 20px; }
+.sub-sec .table-wrap { margin: 0 -16px; }
+/* the Stable card's still meadow: art pixels kept crisp, scaled to the card */
+.stable-thumb { display: block; width: calc(100% - 32px); margin: 0 16px 12px; padding: 0; border: 0; border-radius: 4px; overflow: hidden; background: var(--divider); cursor: pointer; }
+.stable-thumb img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; }
+/* a game word that explains itself when tapped (ui/term.ts) */
+.term { display: inline; padding: 0; margin: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: help;
+  text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: currentColor; }
+.term:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+/* login: a way to Habitica's page, paste buttons, the format checked as you type, the token note folded */
+.btn-outlined { border: 1px solid var(--divider); padding: 0 16px; text-decoration: none; }
+.login-steps > li { margin: 8px 0; }
+.login-open { margin: 8px 0 4px; }
+.field.with-paste input { padding-right: 44px; }
+.field.with-paste.with-eye input { padding-right: 88px; }
+.field .paste { position: absolute; right: -6px; bottom: -4px; }
+.field .paste.beside-eye { right: 38px; }
+.field-help { margin: -4px 0 8px; font-size: 12px; line-height: 16px; color: var(--text-2); }
+.field-help.ok { color: var(--primary-text); }
+.field-help.bad { color: var(--error); }
+details.more > summary { display: inline; cursor: pointer; color: var(--primary-text); font-weight: 500; margin-left: 4px; }
+details.more[open] > summary { display: block; margin: 8px 0 0; }
+details.more p { margin: 8px 0 0; }

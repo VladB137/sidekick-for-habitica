@@ -1,0 +1,43 @@
+/* ---------------------------------------------------------------- History: calendar heatmaps (views/history.ts)
+   Columns are weeks, Monday on top. Teal = done (never amber: amber means a crit), red = missed or more − than +. */
+.heat, .heat-legend {
+  --h-done: #00796B; --h-extra: #80CBC4; --h-missed: #E57373; --h-off: rgba(0,0,0,.08); --h-none: rgba(0,0,0,.14);
+  --h-up1: #B2DFDB; --h-up2: #4DB6AC; --h-up3: #009688; --h-up4: #00695C;
+}
+:root[data-theme="dark"] .heat, :root[data-theme="dark"] .heat-legend {
+  --h-done: #4DB6AC; --h-extra: #00695C; --h-missed: #E57373; --h-off: rgba(255,255,255,.1); --h-none: rgba(255,255,255,.18);
+  --h-up1: #004D40; --h-up2: #00796B; --h-up3: #26A69A; --h-up4: #80CBC4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .heat, :root:not([data-theme="light"]) .heat-legend {
+    --h-done: #4DB6AC; --h-extra: #00695C; --h-missed: #E57373; --h-off: rgba(255,255,255,.1); --h-none: rgba(255,255,255,.18);
+    --h-up1: #004D40; --h-up2: #00796B; --h-up3: #26A69A; --h-up4: #80CBC4;
+  }
+}
+.hist-list > li.hist { padding: 12px 16px; }
+.heat { margin-top: 8px; overflow-x: auto; }
+.heat-months, .heat-body { display: flex; gap: 3px; }
+.heat-months { padding-left: 17px; font-size: 11px; line-height: 14px; color: var(--text-2); }
+.heat-months > span { width: 16px; flex: none; white-space: nowrap; overflow: visible; }
+.heat-days, .heat-col { display: grid; grid-template-rows: repeat(7, 16px); gap: 3px; flex: none; }
+.heat-days { width: 14px; font-size: 10px; line-height: 16px; color: var(--text-3); }
+.c { display: inline-block; width: 16px; height: 16px; border-radius: 2px; background: var(--h-off); vertical-align: middle; }
+.c.done { background: var(--h-done); }
+.c.extra { background: var(--h-extra); }
+.c.missed, .c.neg { background: var(--h-missed); }
+.c.none { background: transparent; box-shadow: inset 0 0 0 1px var(--h-none); }
+.c.open { background: transparent; box-shadow: inset 0 0 0 2px var(--h-done); }
+.c.up1 { background: var(--h-up1); } .c.up2 { background: var(--h-up2); } .c.up3 { background: var(--h-up3); } .c.up4 { background: var(--h-up4); }
+.c.future { visibility: hidden; }
+.c.today { outline: 2px solid var(--text-2); outline-offset: 1px; }
+.heat-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 0 16px 8px; font-size: 12px; color: var(--text-2); }
+.heat-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.streak-num { flex: none; min-width: 40px; height: 40px; border-radius: 20px; display: grid; place-items: center; font-weight: 500; background: var(--tag-bg); color: var(--text); }
+.streak-num.lost { background: var(--primary); color: var(--on-primary); }
+.crit-mult { flex: none; min-width: 52px; font-weight: 500; color: var(--setup); }
+/* crit records on top of the journal: four tiles, two by two */
+.records { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 4px 16px 8px; }
+.record { min-width: 0; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--ol, rgba(0,0,0,.2)); background: var(--tag-bg); }
+.record-value { font: 800 20px/26px var(--title-font, Roboto), sans-serif; color: var(--setup); overflow-wrap: break-word; }
+.record-label { font-size: 13px; line-height: 18px; font-weight: 700; }
+.record-sub { font-size: 12px; line-height: 16px; color: var(--text-2); overflow-wrap: break-word; }

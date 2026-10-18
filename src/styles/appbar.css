@@ -1,0 +1,51 @@
+/* ---------------------------------------------------------------- app bar (it IS the verdict)
+   The row is pinned to the top; the hero under it is ordinary page content and scrolls away with the page,
+   so scrolling never waits for script. The header's own top padding keeps the hero clear of the pinned row. */
+.appbar {
+  position: relative; background: var(--primary); color: var(--on-primary);
+  padding-top: calc(56px + var(--safe-top));
+  transition: background-color var(--t-long) var(--ease), color var(--t-long) var(--ease);
+}
+.appbar-top {
+  /* inherits the header's colour as it animates, so the two never drift apart */
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20; background: inherit; padding-top: var(--safe-top); padding-left: var(--safe-left); padding-right: var(--safe-right);
+  transition: box-shadow var(--t-short) var(--ease), transform var(--t-medium) var(--ease);
+}
+.appbar.lifted .appbar-top { box-shadow: var(--z4); }
+.appbar:not(.lifted) { box-shadow: var(--z4); }
+.appbar.crit { background: var(--accent); color: var(--on-accent); }
+/* the turn to amber spreads as a circle from the verdict (main.ts revealCrit). The gradient is fixed to the
+   viewport, so the header and its pinned row draw the same circle wherever the page is scrolled. */
+@property --rr { syntax: '<length>'; inherits: true; initial-value: 0px; }
+#app.revealing .appbar.crit, #app.revealing .appbar.crit .appbar-top {
+  transition: none;
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 28px), var(--accent) var(--rr), var(--primary) calc(var(--rr) + 1px)) fixed;
+}
+#app.revealing .appbar.crit { animation: reveal var(--t-long) var(--ease-in) both; }
+@keyframes reveal { from { --rr: 0px; } to { --rr: 150vmax; } }
+/* offline: a different colour altogether (Blue Grey 700, white text 7.6:1), so it can't be mistaken for live */
+.appbar.offline { background: #455A64; color: #FFFFFF; }
+/* Relaxed: never amber; red only when the day change would knock you out (Red 800, white text 5.6:1) */
+.appbar.danger { background: #C62828; color: #FFFFFF; }
+.headline-icon { width: 34px; height: 34px; margin-right: 8px; }
+.appbar :focus-visible { outline-color: currentColor; }
+.appbar-row { height: 56px; display: flex; align-items: center; gap: 4px; padding: 0 4px 0 16px; max-width: 720px; margin: 0 auto; }
+.appbar-title { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: .0125em; flex: 1; min-width: 0; display: grid; height: 28px; }
+/* the two titles share one cell and cross-fade */
+.appbar-title > span { grid-area: 1 / 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity var(--t-short) var(--ease), transform var(--t-short) var(--ease); }
+.appbar-title .compact { opacity: 0; transform: translateY(8px); }
+.appbar.collapsed .appbar-title .full { opacity: 0; transform: translateY(-8px); }
+.appbar.collapsed .appbar-title .compact { opacity: 1; transform: none; }
+.appbar .btn-icon { color: inherit; }
+.hero { max-width: 720px; margin: 0 auto; padding: 0 16px 16px; }
+.overline { font-size: 12px; font-weight: 500; letter-spacing: .1333em; text-transform: uppercase; }
+.headline { font-size: 34px; line-height: 40px; font-weight: 400; margin: 2px 0 2px; }
+.headline b { font-weight: 500; }
+.hero-sub { font-size: 14px; }
+.hero-status { font-size: 12px; margin-top: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 14px; font-size: 13px; background: rgba(0,0,0,.2); }
+.appbar.crit .chip { background: rgba(0,0,0,.1); }
+.chip.hit { background: var(--accent); color: var(--on-accent); font-weight: 500; }
+.appbar.crit .chip.hit { background: #FFFFFF; }
+.chip .icon { width: 16px; height: 16px; }

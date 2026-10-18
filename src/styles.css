@@ -1,0 +1,25 @@
+/* Sidekick styles, one file per screen or part (src/styles/). Order matters: later files win ties, and the
+   older-WebView fallbacks come last. Vite inlines these imports into one stylesheet in this order. */
+@import './styles/base.css';                          /* colour tokens, light and dark themes, page basics */
+@import './styles/appbar.css';                        /* the app bar (the verdict) and its crit reveal */
+@import './styles/layout.css';                        /* page layout, cards, folding cards */
+@import './styles/buttons.css';                       /* buttons and ripples */
+@import './styles/nav.css';                           /* sync button, bottom navigation, snackbar, pull to refresh */
+@import './styles/sheets.css';                        /* bottom sheets and the overflow menu */
+@import './styles/lists.css';                         /* task lists and their crit chips */
+@import './styles/stats.css';                         /* stats tables */
+@import './styles/forms.css';                         /* fields, switches, checkboxes */
+@import './styles/login.css';                         /* login and the intro slides */
+@import './styles/options.css';                       /* make-the-next-task-crit options and the full-screen dialog */
+@import './styles/repeats.css';                       /* repeating To-Dos */
+@import './styles/history.css';                       /* History calendar heatmaps */
+@import './styles/stable.css';                        /* the Stable screen and its controls */
+@import './styles/wide-and-motion.css';               /* wide screens and reduced motion, for every screen */
+@import './styles/notification.css';                  /* Settings → Notification: preview and line list */
+@import './styles/now.css';                           /* Now: avatar, level and bars; Stats bars and dial; folded sections; the Stable card; tap-to-explain words; login extras */
+@import './styles/intro-modes.css';                   /* intro extras, the mode choice, first-run tips */
+@import './styles/speaker.css';                       /* who talks on Now: Settings' chooser, the meadow header's character */
+@import './styles/polish.css';                        /* polish: numbers, ticks, sparks, pets; folding cards; rows; (i) buttons */
+@import './styles/look.css';                          /* the look: the meadow header and speech bubble, parchment, outlined cards with coloured headers, Nunito */
+@import './styles/talk.css';                          /* the talking character in Now's meadow and its speech bubble */
+@import './styles/old-webview.css';                   /* fallbacks for older WebViews (Android 9 = Chrome 66): keep last */

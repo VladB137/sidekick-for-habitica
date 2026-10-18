@@ -1,0 +1,12 @@
+/* Who talks on Now (views/speaker.ts, ui/speaker.ts): Settings' row and chooser, the character in the meadow header */
+.sp-row-pic { flex: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sp-row-pic .icon { color: var(--text-2); }
+.sp-you { padding: 0 8px; }
+/* the avatar's figure centred on this point (ui/speaker.ts avatarFigure) */
+.avatar-figure { position: relative; flex: none; width: 0; height: 0; }
+.avatar-figure > .avatar { position: absolute; }
+
+/* the character: a creature in the avatar's box, standing where the avatar's feet are, facing the bubble on its right */
+.speaker.creature { position: relative; flex: none; image-rendering: pixelated; }
+.speaker-art { position: absolute; transform: translateX(-50%); }
+.speaker-art.mirror { transform: translateX(-50%) scaleX(-1); }

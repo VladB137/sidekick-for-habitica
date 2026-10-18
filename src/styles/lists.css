@@ -1,0 +1,40 @@
+/* ---------------------------------------------------------------- lists */
+.list { list-style: none; margin: 0; padding: 0; }
+.li { display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 16px; position: relative; }
+.list > li + li { border-top: 1px solid var(--divider); }
+.list > li > .li { border: 0; }
+.li-btn { width: 100%; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; text-decoration: none; }
+.li-btn .li-title, .li-btn .li-sub { display: block; }
+.li-main { flex: 1; min-width: 0; }
+.li-title { font-size: 16px; line-height: 22px; overflow-wrap: anywhere; }
+.li-sub { color: var(--text-2); font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.li-end { display: flex; align-items: center; gap: 4px; flex: none; }
+.li.done .li-title { color: var(--text-2); text-decoration: line-through; }
+.li.notdue .li-title { color: var(--text-2); }
+.vbar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.v-worst { background: var(--v-worst); } .v-worse { background: var(--v-worse); } .v-bad { background: var(--v-bad); }
+.v-neutral { background: var(--v-neutral); } .v-good { background: var(--v-good); } .v-better { background: var(--v-better); } .v-best { background: var(--v-best); }
+.check { width: 40px; height: 40px; min-width: 40px; border-radius: 50%; border: 0; background: none; color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+.check::after { content: ''; position: absolute; inset: -4px; }
+.check.on { color: var(--primary-text); }
+.check[disabled] { opacity: .45; cursor: default; }
+.hbtn { width: 48px; height: 48px; margin: -6px; border-radius: 50%; border: 0; background: none; color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; flex: none; }
+.hbtn::before { content: ''; position: absolute; inset: 6px; border: 2px solid var(--divider); border-radius: 50%; }
+.hbtn .ripple-box { inset: 6px; }
+.hbtn[disabled] { opacity: .45; cursor: default; }
+.hbtn .icon { width: 20px; height: 20px; }
+.hbtn-space { width: 36px; flex: none; }
+.out { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; line-height: 16px; padding: 2px 8px; border-radius: 12px; background: var(--tag-bg); color: var(--text-2); white-space: nowrap; }
+.out.crit { background: var(--accent); color: var(--on-accent); font-weight: 500; }
+/* in a crit every open task's chip is amber (XP only); the biggest payoff for the aim says BEST and stands out */
+.out.crit.best { position: relative; overflow: hidden; font-weight: 700; letter-spacing: .02em; padding: 3px 10px 3px 6px;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent) 60%); box-shadow: 0 1px 3px rgba(0,0,0,.24), 0 0 0 1px var(--accent-dark); }
+.out.crit.best::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+  transform: translateX(-100%); animation: best-shine 3.2s var(--ease, ease) 0.4s infinite; pointer-events: none; }
+@keyframes best-shine { 0%, 60% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+/* "sets up crit": score this and the task after it crits */
+.out.setup { color: var(--setup); font-weight: 500; padding-left: 4px; }
+.out .icon { width: 14px; height: 14px; }
+.checklist { list-style: none; margin: 4px 0 0; padding: 0; }
+.checklist li { display: flex; align-items: center; gap: 4px; min-height: 48px; font-size: 14px; color: var(--text-2); }
+.checklist .icon { width: 20px; height: 20px; }

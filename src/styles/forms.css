@@ -1,0 +1,47 @@
+/* ---------------------------------------------------------------- forms */
+.field { position: relative; margin: 16px 0 8px; }
+.field input, .field select { width: 100%; border: 0; border-bottom: 1px solid var(--text-2); background: transparent; color: var(--text); font: 400 16px/24px Roboto, sans-serif; padding: 20px 36px 6px 0; outline: none; border-radius: 0; }
+.field select { padding-right: 8px; }
+.field select option { background: var(--surface); color: var(--text); }
+.field label { position: absolute; left: 0; top: 20px; color: var(--text-2); font-size: 16px; transition: transform .15s var(--ease), font-size .15s, color .15s; transform-origin: left top; pointer-events: none; }
+.field input:focus ~ label, .field input:not(:placeholder-shown) ~ label, .field select ~ label { transform: translateY(-18px); font-size: 12px; }
+.field input:focus ~ label, .field select:focus ~ label { color: var(--primary-text); }
+.field::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--primary-text); transform: scaleX(0); transition: transform .2s var(--ease); }
+.field:focus-within::after { transform: scaleX(1); }
+.field .eye { position: absolute; right: -6px; bottom: -4px; }
+.checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 8px 0; user-select: none; min-height: 40px; }
+.checkbox input { width: 18px; height: 18px; accent-color: var(--primary); flex: none; }
+.switch-row { cursor: pointer; }
+.night-gear { border-top: 1px solid var(--divider); }
+.night-gear > .li { padding: 8px 0; }
+.time-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; }
+.time { border: 0; border-bottom: 1px solid var(--text-2); background: transparent; color: var(--text); font: 400 16px/24px Roboto, sans-serif; padding: 4px 0; color-scheme: light dark; }
+.time:disabled { opacity: .5; }
+.switch-row .li-title, .switch-row .li-sub { display: block; }
+/* Material 2017 switch */
+.switch { appearance: none; -webkit-appearance: none; position: relative; width: 36px; height: 14px; border-radius: 7px; background: rgba(0,0,0,.38); margin: 0 4px; flex: none; cursor: pointer; transition: background-color .2s; }
+.switch::before { content: ''; position: absolute; top: -3px; left: -4px; width: 20px; height: 20px; border-radius: 50%; background: #FAFAFA; box-shadow: var(--z1); transition: transform .2s var(--ease), background-color .2s; }
+.switch:checked { background: rgba(0,121,107,.5); }
+.switch:checked::before { transform: translateX(24px); background: var(--primary); }
+:root[data-theme="dark"] .switch:not(:checked) { background: rgba(255,255,255,.3); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .switch:not(:checked) { background: rgba(255,255,255,.3); } :root:not([data-theme="light"]) .switch::before { background: #BDBDBD; } :root:not([data-theme="light"]) .switch:checked::before { background: #80CBC4; } }
+:root[data-theme="dark"] .switch::before { background: #BDBDBD; }
+:root[data-theme="dark"] .switch:checked::before { background: #80CBC4; }
+.notice { background: var(--warn-bg); border-left: 4px solid var(--accent-dark); padding: 12px 16px; margin: 8px 0; border-radius: 2px; font-size: 14px; }
+.notice.error { border-left-color: var(--error); }
+.notice .row { align-items: flex-start; }
+.banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); box-shadow: var(--z1); margin: 8px 0; border-radius: 2px; }
+.banner.warn { border-left: 4px solid var(--accent-dark); }
+.banner.err { border-left: 4px solid var(--error); }
+.banner.offline { border-left: 4px solid #455A64; background: var(--surface); }
+.banner.demo { border-left: 4px solid var(--primary); }
+.offline-card { border-top: 4px solid #455A64; }
+.danger-card { border-top: 4px solid var(--error); }
+.danger-card .card-head .icon { color: var(--error); fill: var(--error); }
+.inn-note { color: var(--text-2); font-size: 14px; }
+.checking-note { display: flex; align-items: center; gap: 8px; margin: 0 16px 8px; padding: 8px 12px; border-radius: 2px; background: var(--tag-bg); color: var(--text-2); font-size: 13px; line-height: 18px; }
+.checking-note .icon { width: 18px; height: 18px; }
+.spin-slow { animation: spin 2s linear infinite; }
+.check.static { cursor: default; opacity: .6; }
+.check.static::after { display: none; }
+h3.subheader { margin: 0; }

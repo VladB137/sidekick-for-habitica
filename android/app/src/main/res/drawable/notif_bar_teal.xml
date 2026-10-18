@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A thin bar in the notification: grey track, teal fill (teal normally, amber for a crit, red for danger) -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle"><corners android:radius="2dp" /><solid android:color="#33808080" /></shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip><shape android:shape="rectangle"><corners android:radius="2dp" /><solid android:color="#FF009688" /></shape></clip>
+    </item>
+</layer-list>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One line of the expanded notification: a 20 dp icon, up to three lines of text, an optional thin bar.
+     Surfaces.Measure adds up these sizes to fit whole rows in Android's expanded height. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/row_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="16dp"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/row_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+
+        <ProgressBar
+            android:id="@+id/row_bar_teal"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:max="1000"
+            android:progressDrawable="@drawable/notif_bar_teal"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/row_bar_amber"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:max="1000"
+            android:progressDrawable="@drawable/notif_bar_amber"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/row_bar_red"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="3dp"
+            android:max="1000"
+            android:progressDrawable="@drawable/notif_bar_red"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

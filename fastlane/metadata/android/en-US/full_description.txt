@@ -1,0 +1,21 @@
+<p>Sidekick for Habitica is a companion app for <a href="https://habitica.com">Habitica</a>, the habit tracker that plays like a game. It is independent and not affiliated with or endorsed by Habitica.</p>
+
+<p><b>Crits, planned.</b> Habitica's critical hit roll isn't random: it is computed from your numbers. Sidekick knows whether your next task will crit, and lists the ways to make it certain, free ones first: a task you've already done, a gear swap, a stat point, a skill, a little Gold. You confirm every step.</p>
+
+<p><b>Or no crits at all.</b> Relaxed mode keeps everything else and never mentions them.</p>
+
+<ul>
+<li><b>Your day:</b> what matters right now, Dailies left and the time to the day change, a warning before the day change would take all your HP, streaks at risk, quest invitations.</li>
+<li><b>Tasks:</b> score habits, Dailies and To-Dos, tick checklists, buy rewards, with what each one gives, and undo.</li>
+<li><b>Your class:</b> what it's best at, worked out for your numbers and the gear you own.</li>
+<li><b>Repeating To-Dos:</b> To-Dos that come back a set number of days after you tick them.</li>
+<li><b>The Stable:</b> playgrounds where your own pets and mounts live, also as a live wallpaper, a screen saver and a widget.</li>
+<li><b>On the phone,</b> each off until you switch it on: an ongoing notification, a widget, a Quick Settings tile, and Night gear.</li>
+<li><b>History</b> and a crit journal, and a backup file for moving to a new phone.</li>
+</ul>
+
+<p><b>Try it first:</b> "Try it without an account" runs the whole app on a made-up account, answered on your phone by Habitica's own game code.</p>
+
+<p><b>Privacy.</b> The app talks only to habitica.com. There is no server, no analytics and no ads. Your API Token is sent only to Habitica, and with "Remember on this device" it is stored encrypted with a key held by Android's Keystore. Nothing is spent, scored or bought without your tap; the one exception is Night gear, if you switch it on, which only changes the gear you wear.</p>
+
+<p>Pet, mount, item and skill artwork © HabitRPG, Inc., CC BY-NC-SA 3.0. The app is free and non-commercial.</p>

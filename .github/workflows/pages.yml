@@ -1,0 +1,45 @@
+# Publishes the web build to GitHub Pages. Switched off since 24 Sep 2026: the Android app is the product and
+# the web build is its test target. Run it by hand (Actions → Deploy to GitHub Pages) to publish a commit that
+# passed CI. To make it automatic again, add back:
+#   workflow_run: { workflows: [CI], types: [completed], branches: [main] }
+name: Deploy to GitHub Pages
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the exact commit CI verified
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      # the made-up account behind "Try it" runs Habitica's own code, bundled from the release in src/engine/rules.ts
+      - name: Clone Habitica
+        run: |
+          TAG=$(node -e "console.log(require('fs').readFileSync('src/engine/rules.ts','utf8').match(/checkedAgainst: '([^']+)'/)[1])")
+          git clone --depth 1 --branch "$TAG" https://github.com/HabitRPG/habitica ../habitica
+      - run: npm run harness -- ../habitica
+      - run: npm run build
+      - run: touch dist/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+      - id: deployment
+        uses: actions/deploy-pages@v4
