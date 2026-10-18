@@ -18,7 +18,7 @@ Sidekick for Habitica is an independent, open-source app. It is **not affiliated
 
 Android 9 or newer. The app is English only.
 
-- **[Obtainium](https://github.com/ImranR98/Obtainium)** (recommended): add `https://github.com/VladB137/sidekick-for-habitica`. Obtainium installs the newest release and tells you when there's an update.
+- **[Obtainium](https://github.com/ImranR98/Obtainium)** (recommended): add `https://github.com/VladB137/sidekick-for-habitica`, or [tap here on the phone to add it](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.vladb137.sidekick%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FVladB137%2Fsidekick-for-habitica%22%2C%22author%22%3A%22VladB137%22%2C%22name%22%3A%22Sidekick%20for%20Habitica%22%7D). Obtainium installs the newest release and tells you when there's an update.
 - **By hand:** download the APK from [Releases](https://github.com/VladB137/sidekick-for-habitica/releases/latest) and open it.
 - IzzyOnDroid and F-Droid are planned.
 
