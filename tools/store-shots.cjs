@@ -15,8 +15,10 @@ const exe = fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chrom
   fs.mkdirSync(PHONE, { recursive: true });
   const browser = await chromium.launch(exe ? { executablePath: exe } : {});
 
+  // a real 412 x 915 dp phone (1080 x 2400 px) is 2.625 device pixels per CSS pixel; at 2 the Stable would draw at
+  // 1 device pixel per world pixel (grid.ts fits whole multiples), half the size any phone this wide shows it
   const shoot = async (scheme, shots) => {
-    const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, colorScheme: scheme, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+    const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2.625, colorScheme: scheme, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
     await ctx.addInitScript(() => { window.__noAutoRead = true; });
     const page = await ctx.newPage();
     await page.goto(APP);
