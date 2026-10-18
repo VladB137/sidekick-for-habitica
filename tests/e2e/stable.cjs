@@ -5,6 +5,22 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     const navW = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.bottomnav .navitem')].map(b => [b.getAttribute('aria-label'), b.getBoundingClientRect().width])));
     const iconY = name => page.evaluate(n => document.querySelector(`.bottomnav [aria-label="${n}"] .icon`).getBoundingClientRect().top, name);
     const before = await navW(); const yBefore = await iconY('Stable');
+    // every frame of the first second: the canvas's box and backing store and the world's size, once there is a canvas
+    await page.evaluate(() => {
+      const seen = [], t0 = performance.now();
+      window.__stableSizes = new Promise(done => {
+        const f = () => {
+          const c = document.querySelector('#stable-stage canvas.pg-canvas'), w = window.__stablePg?.world;
+          // a new canvas's default 300 x 150 is resized before it is first painted (stage.ts), so it isn't counted
+          if (c && c.width !== 300) {
+            const k = `${c.clientWidth}x${c.clientHeight} back ${c.width}x${c.height} world ${w?.w}x${w?.h}`;
+            if (seen[seen.length - 1] !== k) seen.push(k);
+          }
+          if (performance.now() - t0 < 1200) requestAnimationFrame(f); else done({ seen, vw: innerWidth, vh: innerHeight });
+        };
+        requestAnimationFrame(f);
+      });
+    });
     await page.click('.bottomnav button[aria-label="Stable"]');
     await page.waitForTimeout(70);
     const mid = await navW();
@@ -16,6 +32,11 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     check('shifting nav: the current icon lifts to make room for its label', yAfter < yBefore - 4, `${yBefore} → ${yAfter}`);
     const stage = await page.evaluate(() => { const r = document.getElementById('stable-stage')?.getBoundingClientRect(); return r && [r.top, r.left, r.width, r.height, innerWidth, innerHeight]; });
     check('Stable: the stage covers the whole window under the chrome', !!stage && stage[0] === 0 && stage[1] === 0 && stage[2] === stage[4] && stage[3] === stage[5], JSON.stringify(stage));
+    {
+      // the screen's fade must not move the stage: a transform on <main> would size it to main, then to the window (a jump)
+      const sz = await page.evaluate(() => window.__stableSizes);
+      check('Stable: opening the tab lays the meadow out once, at the window\u2019s size, with no resize or jump after', sz.seen.length === 1 && sz.seen[0].startsWith(`${sz.vw}x${sz.vh} `), JSON.stringify(sz));
+    }
     const pg = () => page.evaluate(() => { const p = window.__stablePg; return p && { running: p.stage.running, still: p.stage.still, frames: p.stage.stats.frames, who: p.herd.creatures.map(c => c.id).join(','), hint: !p.hint.hidden, insets: { ...p.world.insets }, canvas: document.querySelector('#stable-stage > canvas.pg-canvas') === p.stage.canvas }; });
     await page.waitForTimeout(300);
     let st = await pg();
