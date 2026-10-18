@@ -28,7 +28,7 @@ F-Droid and IzzyOnDroid each rebuild a release from the tagged commit in a clean
 - Nothing in it depends on when or where it was built. The web bundle's date (Settings) is the commit's date (`SOURCE_DATE_EPOCH` overrides it), and the service worker's cache name is a hash of the built files. Anything new that stamps a time, a random ID or an unsorted file list into the bundle or the APK breaks this.
 - The tools match: Node 22, JDK 21 (Temurin), the Gradle wrapper's version, Habitica cloned at the tag in `src/engine/rules.ts`, `npm ci` from the lockfile.
 
-To check one yourself: build the release commit unsigned (`npm ci`, clone Habitica, `npm run harness -- ../habitica`, `npm run android:sync`, `cd android && ./gradlew assembleRelease` without the `RELEASE_KEYSTORE` variables), then `apksigcopier compare sidekick-for-habitica-<version>.apk --unsigned app-release-unsigned.apk` (`pip install apksigcopier`). No output means it reproduces; `diffoscope` on the two shows any difference.
+To check one yourself: build the release commit unsigned (`npm ci`, clone Habitica, `npm run harness -- ../habitica`, `npm run android:sync`, `cd android && ./gradlew assembleRelease` without the `RELEASE_KEYSTORE` variables), then `apksigcopier compare sidekick-for-habitica-<version>.apk --unsigned app-release-unsigned.apk` (`pip install apksigcopier`; it needs `apksigner` from the Android SDK build-tools on `PATH`). No output means it reproduces; `diffoscope` on the two shows any difference.
 
 ## F-Droid
 
