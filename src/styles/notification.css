@@ -4,7 +4,7 @@
 body.screen-open { overflow: hidden; }
 .screen-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 16px; min-height: calc(56px + var(--safe-top)); padding: var(--safe-top) calc(4px + var(--safe-right)) 0 calc(4px + var(--safe-left)); background: var(--primary); color: var(--on-primary); box-shadow: var(--z4); }
 .screen-title { font-size: 20px; line-height: 28px; font-weight: 500; margin: 0; letter-spacing: .0125em; }
-.screen-body { max-width: 640px; margin: 0 auto; padding: 8px 8px 0; }
+.screen-body { max-width: 640px; margin: 0 auto; padding: 8px calc(8px + var(--safe-right)) 0 calc(8px + var(--safe-left)); }
 @media (prefers-reduced-motion: reduce) { .screen, .screen.open { transition: none; } }
 
 /* the notification preview: an Android 9 notification, white or dark like the phone's shade */

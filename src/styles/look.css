@@ -199,7 +199,7 @@ main .card > .fold-head > .icon:first-child { width: 34px; height: 34px; padding
 /* ---- the snackbar floats like the bubbles: outlined, rounded, clear of the edges */
 #snackbar { background: #3A3128; color: #FFF8EC; border: 2px solid var(--ol); border-radius: var(--r); box-shadow: var(--float); }
 #snackbar.crit { background: #3E2723; }
-@media (max-width: 599px) { #snackbar { left: 8px; right: 8px; margin-bottom: 8px; border-radius: var(--r); } }
+@media (max-width: 599px) { #snackbar { left: calc(8px + var(--safe-left)); right: calc(8px + var(--safe-right)); margin-bottom: 8px; border-radius: var(--r); } }
 
 /* tap-to-explain words: a dotted line under them drawn as a border, which sits in the same place on every WebView
    (text-underline-offset is Chrome 87; without it Chrome 66-86 put Nunito's underline elsewhere) */

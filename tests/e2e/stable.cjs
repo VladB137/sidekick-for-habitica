@@ -5,6 +5,22 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     const navW = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.bottomnav .navitem')].map(b => [b.getAttribute('aria-label'), b.getBoundingClientRect().width])));
     const iconY = name => page.evaluate(n => document.querySelector(`.bottomnav [aria-label="${n}"] .icon`).getBoundingClientRect().top, name);
     const before = await navW(); const yBefore = await iconY('Stable');
+    // every frame of the first second: the canvas's box and backing store and the world's size, once there is a canvas
+    await page.evaluate(() => {
+      const seen = [], t0 = performance.now();
+      window.__stableSizes = new Promise(done => {
+        const f = () => {
+          const c = document.querySelector('#stable-stage canvas.pg-canvas'), w = window.__stablePg?.world;
+          // a new canvas's default 300 x 150 is resized before it is first painted (stage.ts), so it isn't counted
+          if (c && c.width !== 300) {
+            const k = `${c.clientWidth}x${c.clientHeight} back ${c.width}x${c.height} world ${w?.w}x${w?.h}`;
+            if (seen[seen.length - 1] !== k) seen.push(k);
+          }
+          if (performance.now() - t0 < 1200) requestAnimationFrame(f); else done({ seen, vw: innerWidth, vh: innerHeight });
+        };
+        requestAnimationFrame(f);
+      });
+    });
     await page.click('.bottomnav button[aria-label="Stable"]');
     await page.waitForTimeout(70);
     const mid = await navW();
@@ -16,6 +32,11 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     check('shifting nav: the current icon lifts to make room for its label', yAfter < yBefore - 4, `${yBefore} → ${yAfter}`);
     const stage = await page.evaluate(() => { const r = document.getElementById('stable-stage')?.getBoundingClientRect(); return r && [r.top, r.left, r.width, r.height, innerWidth, innerHeight]; });
     check('Stable: the stage covers the whole window under the chrome', !!stage && stage[0] === 0 && stage[1] === 0 && stage[2] === stage[4] && stage[3] === stage[5], JSON.stringify(stage));
+    {
+      // the screen's fade must not move the stage: a transform on <main> would size it to main, then to the window (a jump)
+      const sz = await page.evaluate(() => window.__stableSizes);
+      check('Stable: opening the tab lays the meadow out once, at the window\u2019s size, with no resize or jump after', sz.seen.length === 1 && sz.seen[0].startsWith(`${sz.vw}x${sz.vh} `), JSON.stringify(sz));
+    }
     const pg = () => page.evaluate(() => { const p = window.__stablePg; return p && { running: p.stage.running, still: p.stage.still, frames: p.stage.stats.frames, who: p.herd.creatures.map(c => c.id).join(','), hint: !p.hint.hidden, insets: { ...p.world.insets }, canvas: document.querySelector('#stable-stage > canvas.pg-canvas') === p.stage.canvas }; });
     await page.waitForTimeout(300);
     let st = await pg();
@@ -135,6 +156,34 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     await page.click('[data-k="stable-full"]'); await page.waitForTimeout(400);
     await page.click('[data-k="stable-exit"]'); await page.waitForTimeout(400);
     check('Stable full screen: its Back button leaves it as Back does (and is only there in full screen)', noExit === 0 && await page.evaluate(() => !document.getElementById('app').classList.contains('stable-full') && location.hash === '#stable' && !history.state?.full && !document.querySelector('[data-k="stable-exit"]') && document.querySelector('.navitem.active').getAttribute('aria-label') === 'Stable'));
+    {
+      // landscape with the navigation bar on the right and a camera cutout on the left (the safe areas Capacitor's SystemBars
+      // hands the page): the stage and every control stand between them, in and out of full screen
+      await page.setViewportSize({ width: 915, height: 412 });
+      await page.evaluate(() => { const s = document.documentElement.style; s.setProperty('--safe-area-inset-left', '32px'); s.setProperty('--safe-area-inset-right', '48px'); });
+      await page.waitForTimeout(600);
+      const clear = () => page.evaluate(() => {
+        const L = 32, R = innerWidth - 48, out = [];
+        for (const sel of ['#stable-stage', '#stable-stage > canvas.pg-canvas', '[data-k="stable-full"]', '[data-k="stable-toys"]', '[data-k="stable-exit"]', '[data-k="stable-crit"]', '.pg-row > *', '.pg-bar > *']) {
+          for (const e of document.querySelectorAll(sel)) { const r = e.getBoundingClientRect(); if (r.width && (r.left < L - 0.5 || r.right > R + 0.5)) out.push(`${sel} ${Math.round(r.left)}..${Math.round(r.right)}`); }
+        }
+        const st = document.getElementById('stable-stage').getBoundingClientRect();
+        return { out, stage: [st.left, st.width], wide: document.documentElement.scrollWidth, w: innerWidth, app: getComputedStyle(document.getElementById('app')).position };
+      });
+      const side = await clear();
+      await page.screenshot({ path: `${SHOTS}/27b-stable-landscape.png` });
+      await page.click('[data-k="stable-full"]'); await page.waitForTimeout(500);
+      const sideFull = await clear();
+      await page.click('[data-k="stable-exit"]'); await page.waitForTimeout(400);
+      check('Stable in landscape: the stage and its buttons stay clear of the navigation bar and a camera cutout at the sides',
+        !side.out.length && side.stage[0] === 32 && side.stage[1] === 915 - 80 && !sideFull.out.length, JSON.stringify([side, sideFull]));
+      // #app wears the full-screen button's class in full screen; the button's rules must not make it a 40 px box (the page
+      // would grow wider than the screen whenever a banner shows)
+      check('Stable full screen: the page stays as wide as the screen', sideFull.app === 'static' && sideFull.wide === sideFull.w && sideFull.w === 915, JSON.stringify(sideFull));
+      await page.evaluate(() => { const s = document.documentElement.style; s.removeProperty('--safe-area-inset-left'); s.removeProperty('--safe-area-inset-right'); });
+      await page.setViewportSize({ width: 412, height: 915 });
+      await page.waitForTimeout(600);
+    }
     await tab('Settings');
     check('Stable: leaving the screen stops and releases the playground', (await page.evaluate(() => window.__stableLog.slice(-2).join(',') === 'hide,destroy' && !window.__stablePg.stage.running && !window.__stablePg.stage.canvas.isConnected)));
     // the Stats card opens the Stable full screen; Back returns to Stats

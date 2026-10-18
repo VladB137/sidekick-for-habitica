@@ -1,10 +1,19 @@
 import { defineConfig, type Plugin } from 'vite';
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
 import { build as esbuild } from 'esbuild';
 import flexGapFallback from './tools/flex-gap-fallback.mjs';
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+// The date Settings shows: the commit's, not the build's, so two builds of one commit come out byte for byte the same
+// (F-Droid and IzzyOnDroid rebuild the release and compare it with ours). SOURCE_DATE_EPOCH wins when set.
+function sourceDate (): Date {
+  const epoch = process.env.SOURCE_DATE_EPOCH;
+  if (epoch) return new Date(Number(epoch) * 1000);
+  try { return new Date(Number(execSync('git log -1 --format=%ct', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()) * 1000); }
+  catch { return new Date(); } // not a git checkout
+}
 const testApi = process.env.VITE_TEST_API || '';
 // the playground's development pages (engine, creatures, scenes) go into test builds only, never into the app
 const devPages = testApi ? { playground: 'playground.html', creatures: 'creatures.html', scenes: 'scenes.html' } : {};
@@ -32,7 +41,7 @@ function csp (): Plugin {
   };
 }
 
-/** A small offline service worker listing every built file; the cache name changes with each build. */
+/** A small offline service worker listing every built file; the cache name changes whenever any of them does. */
 function serviceWorker (): Plugin {
   return {
     name: 'service-worker',
@@ -40,9 +49,17 @@ function serviceWorker (): Plugin {
     generateBundle (_, bundle) {
       // precache the app plus the Latin Roboto files; other scripts' fonts load on demand
       // and not the made-up account's Habitica code (about 1.5 MB, fetched on the tap that asks for it)
-      const files = Object.keys(bundle).filter(f => !f.endsWith('.map') && !(/roboto-/.test(f) && !/roboto-latin(-ext)?-[45]00-normal-[^.]+\.woff2$/.test(f)) && !/habitica-game-/.test(f));
+      const files = Object.keys(bundle).filter(f => !f.endsWith('.map') && !(/roboto-/.test(f) && !/roboto-latin(-ext)?-[45]00-normal-[^.]+\.woff2$/.test(f)) && !/habitica-game-/.test(f))
+        .sort(); // the bundle lists assets in the order they finished, which varies from build to build
       const statics = ['./', 'webview-check.js', 'webview-update.html', 'webview-update.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'];
-      const version = `${pkg.version}-${Date.now().toString(36)}`;
+      // named by the files' contents, not the time, so the same source builds the same sw.js
+      const hash = createHash('sha256');
+      for (const f of files) {
+        const item = bundle[f];
+        hash.update(f).update(item.type === 'chunk' ? item.code : item.source);
+      }
+      for (const f of statics) if (f !== './') hash.update(f).update(readFileSync(`public/${f}`));
+      const version = `${pkg.version}-${hash.digest('hex').slice(0, 10)}`;
       const sw = readFileSync('./src/sw.js', 'utf8')
         .replace('__VERSION__', version)
         .replace('__FILES__', JSON.stringify([...statics, ...files]));
@@ -99,7 +116,7 @@ export default defineConfig({
   base: './',
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
-    __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)),
+    __BUILD_DATE__: JSON.stringify(sourceDate().toISOString().slice(0, 10)),
   },
   // Android 9 (minSdk 28) can run a WebView as old as Chrome 66 until Google Play updates it: syntax is lowered to that,
   // src/app/polyfills.ts fills in the library calls, public/webview-check.js covers anything older

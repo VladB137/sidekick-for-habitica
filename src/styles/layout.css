@@ -5,6 +5,9 @@ body.has-snack main { padding-bottom: calc(56px + 8px + 72px + 16px + var(--safe
 /* a new screen fades up into place (the same screen updated in place doesn't) */
 main[data-k] { animation: screen-in var(--t-medium) var(--ease-in); }
 @keyframes screen-in { from { opacity: 0; transform: translateY(12px); } }
+/* the Stable only fades: its stage is fixed to the window, and while main is transformed main is the box a fixed child sits in,
+   so the meadow would lay out at main's size and again at the window's when the slide ends (the jump on opening the tab) */
+main[data-k="main-stable"] { animation-name: fade-in; }
 @keyframes fade-in { from { opacity: 0; } }
 /* reference cards rest low; the one card that answers "what now" (.action) stands up from the page (B5) */
 .card { background: var(--surface); border-radius: 2px; box-shadow: var(--z1); margin: 12px 0; overflow: hidden; }
