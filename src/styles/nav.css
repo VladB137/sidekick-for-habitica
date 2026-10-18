@@ -27,7 +27,7 @@
 }
 .shifting .navitem.active .lbl { opacity: 1; transform: none; transition: opacity var(--t-medium) var(--ease-in) 50ms, transform var(--t-medium) var(--ease); }
 .bottomnav-inner { justify-content: center; }
-#snackbar { position: fixed; left: 50%; bottom: calc(56px + 8px + var(--safe-bottom)); transform: translate(-50%, 120%); min-width: 288px; max-width: 568px; max-width: min(568px, calc(100vw - 16px)); background: #323232; color: #fff; border-radius: 2px; box-shadow: var(--z6); display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 24px; min-height: 48px; z-index: 30; opacity: 0; transition: transform .25s var(--ease), opacity .25s; pointer-events: none; }
+#snackbar { position: fixed; left: calc(50% + (var(--safe-left) - var(--safe-right)) / 2); bottom: calc(56px + 8px + var(--safe-bottom)); transform: translate(-50%, 120%); min-width: 288px; max-width: 568px; max-width: min(568px, calc(100vw - 16px - var(--safe-left) - var(--safe-right))); background: #323232; color: #fff; border-radius: 2px; box-shadow: var(--z6); display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 24px; min-height: 48px; z-index: 30; opacity: 0; transition: transform .25s var(--ease), opacity .25s; pointer-events: none; }
 #snackbar.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
 #snackbar.crit { background: #3E2723; }
 #snackbar.crit .snack-text { color: var(--accent); font-weight: 500; }
@@ -36,7 +36,7 @@
 .snack-action { color: var(--accent) !important; }
 @media (max-width: 599px) {
   /* phones: full width, flush with the bottom navigation */
-  #snackbar { left: 0; right: 0; bottom: calc(56px + var(--safe-bottom)); transform: translateY(120%); min-width: 0; max-width: none; border-radius: 0; padding-left: 16px; }
+  #snackbar { left: var(--safe-left); right: var(--safe-right); bottom: calc(56px + var(--safe-bottom)); transform: translateY(120%); min-width: 0; max-width: none; border-radius: 0; padding-left: 16px; }
   #snackbar.show { transform: translateY(0); }
 }
 /* pull to refresh: the Material swipe-refresh disc. It waits under the app bar; script moves it while the

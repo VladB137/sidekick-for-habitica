@@ -26,7 +26,7 @@
 .fsd-busy { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; overflow: hidden; opacity: 0; transition: opacity var(--t-short); }
 .fsd-busy::before { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; background: var(--accent); animation: indet 1.2s var(--ease) infinite; }
 .fsd.working .fsd-busy { opacity: 1; }
-.fsd-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 8px 24px calc(24px + var(--safe-bottom)); }
+.fsd-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 8px calc(24px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(24px + var(--safe-left)); }
 .fsd-body > * { max-width: 560px; margin-left: auto; margin-right: auto; }
 body.fsd-on { overflow: hidden; }
 body.fsd-on #snackbar { bottom: var(--safe-bottom); }
