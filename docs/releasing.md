@@ -23,10 +23,12 @@ It asks for one password (store and key share it). Then:
 
 ## Each release
 
-1. `package.json` gets the new version (`1.0.0`) on `main`, through a PR like any change. Android's `versionCode` follows from it (major×10000 + minor×100 + patch), so each release is a higher number than the last.
+1. `package.json` gets the new version (`1.0.0`) on `main`, through a PR like any change. Android's `versionCode` follows from it (major×10000 + minor×100 + patch), so each release is a higher number than the last. The same PR adds the release notes:
+   - `docs/release-notes/1.0.0.md`: what's new, with every new lever listed. The draft Release starts with it.
+   - `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (`10000.txt` for 1.0.0): a short version, under 500 characters, which F-Droid and IzzyOnDroid show.
 2. Push the tag on that commit: `git tag v1.0.0 <commit> && git push origin v1.0.0`, or ask Claude to (it pushes tags only on your word).
 3. `.github/workflows/release.yml` checks the tag is on `main` and matches `package.json`, builds and signs the APK, and refuses it if it's debuggable, unsigned or the wrong version. It then opens a **draft** Release with `sidekick-for-habitica-1.0.0.apk`, its SHA-256 and the signing certificate's SHA-256.
-4. Open the draft, write what's new (new levers must be listed), and press **Publish**. Nothing is public before that.
+4. Open the draft, check what's new (new levers must be listed), and press **Publish**. Nothing is public before that.
 
 ## Your own phone
 

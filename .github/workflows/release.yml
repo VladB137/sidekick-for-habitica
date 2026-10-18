@@ -80,7 +80,8 @@ jobs:
             echo
             echo "Install: download \`$OUT\` on the phone, open it, allow installing from your browser when Android asks."
             echo
-            echo "_What's new: write it here before publishing (new levers must be listed)._"
+            if [ -f "docs/release-notes/$VERSION.md" ]; then cat "docs/release-notes/$VERSION.md"
+            else echo "_What's new: write it here before publishing (new levers must be listed)._"; fi
             echo
             echo "APK SHA-256: \`$SHA\`"
             echo "Signing certificate SHA-256: \`$CERT\`"
