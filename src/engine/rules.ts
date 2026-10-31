@@ -6,7 +6,7 @@
  */
 export const RULES = {
   /** Habitica release every rule below was verified against (tests/parity.test.ts). */
-  checkedAgainst: 'v5.51.0',
+  checkedAgainst: 'v5.52.0',
 
   // crit roll — fns/crit.js, fns/predictableRandom.js (unchanged since 2016–2017)
   critBase: 0.03,

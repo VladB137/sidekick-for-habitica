@@ -77,7 +77,7 @@ Android 9 or newer, with any Android System WebView from Chrome 66 on, and it lo
 
 The engine (`src/engine`) is a line-by-line port of Habitica’s own game code. `tests/parity.test.ts` bundles the real code from a Habitica clone and runs every move through both:
 
-| Suite | Cases | Result against Habitica v5.51.0 |
+| Suite | Cases | Result against Habitica v5.52.0 |
 |---|---|---|
 | A. Scoring habits, Dailies, To-Dos, rewards, up and down | 20,000 | identical |
 | B. All 16 class skills, incl. party buffs on the caster | 20,000 | identical |
@@ -140,7 +140,7 @@ The Android notification, widget and tile don't run the TypeScript engine; they 
 
 ```bash
 npm install
-git clone --depth 1 --branch v5.51.0 https://github.com/HabitRPG/habitica ../habitica
+git clone --depth 1 --branch v5.52.0 https://github.com/HabitRPG/habitica ../habitica
 npm run harness -- ../habitica     # bundle Habitica's game code for the tests and the build (Try it's made-up account)
 npm run test                        # sine (exact under Node 20) + parity suite + gear + history
 npm run dev                         # local dev server
