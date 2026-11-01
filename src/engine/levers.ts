@@ -268,8 +268,11 @@ function gearCandidates (inv: Inventory, cls: ClassKey, stat: StatKey): GearCand
 const ONCE = new Set(['frost', 'stealth']);
 const castKey = (a: LeverAction) => { const st = a.steps[0]; return st && st.kind === 'cast' ? st.spellId : undefined; };
 
-/** Candidate single actions from the current state. */
-export function leverActions (s: State, inv: Inventory, roll: RollKey): LeverAction[] {
+/**
+ * Candidate single actions from the current state. Task-aimed casts and done tasks stop at a few distinct results
+ * (3 and 8) unless `all`, which keeps every one that leads somewhere different.
+ */
+export function leverActions (s: State, inv: Inventory, roll: RollKey, all = false): LeverAction[] {
   const allow = (k: LeverKind) => inv.allow?.[k] !== false;
   const acts: LeverAction[] = [];
   // at 0 HP the official apps allow nothing but reviving (the server itself doesn't enforce it)
@@ -346,7 +349,7 @@ export function leverActions (s: State, inv: Inventory, roll: RollKey): LeverAct
               return r.state;
             },
           });
-          if (seen.size >= 3) break;
+          if (!all && seen.size >= 3) break;
         }
         if (!targets.length && def.key === 'smash') continue;
       } else {
@@ -424,7 +427,7 @@ export function leverActions (s: State, inv: Inventory, roll: RollKey): LeverAct
           return r.state;
         },
       });
-      if (seen.size >= 8) break;
+      if (!all && seen.size >= 8) break;
     }
   }
 
@@ -451,13 +454,15 @@ function describe (steps: Step[]): string {
 /**
  * Cheapest ways to make the next `roll` crit. Searches single actions and pairs,
  * simulating each with the engine, and returns diverse options sorted by cost.
+ * `all` returns every way found instead (the same pair in either order counted once), in the same order.
  */
-export function forceOptions (state: State, inv: Inventory, roll: RollKey = 'task', opts: { max?: number, depth?: number, expand?: number } = {}): { already: boolean, options: ForceOption[] } {
+export function forceOptions (state: State, inv: Inventory, roll: RollKey = 'task', opts: { max?: number, depth?: number, expand?: number, all?: boolean } = {}): { already: boolean, options: ForceOption[] } {
   if (rollHits(state, roll)) return { already: true, options: [] };
   const maxOut = opts.max ?? 5;
   const depth = opts.depth ?? 2;
   const found: ForceOption[] = [];
-  const first = leverActions(state, inv, roll);
+  const all = !!opts.all;
+  const first = leverActions(state, inv, roll, all);
 
   const tryApply = (a: LeverAction, s: State, ctx: ApplyCtx): State | null => {
     try { return a.apply(s, ctx); } catch { return null; }
@@ -487,7 +492,7 @@ export function forceOptions (state: State, inv: Inventory, roll: RollKey = 'tas
       const sig = `${seedOf(s1)}|${s1.gear.str}|${s1.gear.con}|${s1.gear.per}|${s1.buffs.str}|${s1.buffs.con}|${s1.buffs.per}|${s1.str}|${s1.con}|${s1.per}`;
       if (seen.has(sig)) continue;
       seen.add(sig);
-      for (const b of leverActions(s1, inv, roll)) {
+      for (const b of leverActions(s1, inv, roll, all)) {
         if (b.kind === a.kind && (a.kind === 'sell' || a.kind === 'allocate' || a.kind === 'gear' || a.kind === 'habitDown' || a.kind === 'done')) continue;
         // `inv` describes the state before `a`: after Chilling Frost the server refuses a second one
         // (streaks already active), and after Stealth the buff may already cover every Dailies due
@@ -505,6 +510,18 @@ export function forceOptions (state: State, inv: Inventory, roll: RollKey = 'tas
   // have done a task come after those that need nothing, up to three of them on top of `max`; conditional
   // (bad-habit) options last.
   found.sort((x, y) => (Number(x.conditional) - Number(y.conditional)) || (Number(x.ifDone) - Number(y.ifDone)) || (x.tier - y.tier) || (x.cost - y.cost) || (x.steps.length - y.steps.length));
+  if (all) {
+    const ways = new Set<string>();
+    return {
+      already: false,
+      options: found.filter(f => {
+        const way = f.steps.map(st => st.label).sort().join('\n');
+        if (ways.has(way)) return false;
+        ways.add(way);
+        return true;
+      }),
+    };
+  }
   const out: ForceOption[] = [];
   const families = new Set<string>();
   let plain = 0; let done = 0;

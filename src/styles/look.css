@@ -130,7 +130,7 @@ main .card.hue-red, main .card.danger-card, main .card[data-k="streaks"], main .
 main .card.hue-blue, main .card[data-k="class-card"], main .card[data-k="you"], main .card[data-k="stat-bars"], main .card[data-k="numbers"],
 main .card[data-k="history-card"], main .card[data-k="journal"], main .card[data-k="hist-dailies"], main .card[data-k="hist-habits"],
 main .card[data-k="np-lines"], main .card[data-k="np-order"], main .card[data-k="np-widget"], main .card[data-k="phone"] { --cc: var(--h3f); --ccbg: var(--h3); }
-main .card.hue-green, main .card.stable-card, main .card.startday, main .card[data-k="feeding"], main .card[data-k="repeats"] { --cc: var(--h4f); --ccbg: var(--h4); }
+main .card.hue-green, main .card.startday, main .card[data-k="feeding"], main .card[data-k="repeats"] { --cc: var(--h4f); --ccbg: var(--h4); }
 main .card.hue-brown, main .card[data-k="saving"], main .card[data-k="about"] { --cc: var(--h5f); --ccbg: var(--h5); }
 main .card.offline-card { --cc: #FFFFFF; --ccbg: #455A64; }
 .card { background: var(--surface); border-radius: var(--r); border: var(--bw) solid var(--ol); box-shadow: 0 var(--sh) 0 var(--ol); margin: 14px 4px; }
@@ -199,7 +199,7 @@ main .card > .fold-head > .icon:first-child { width: 34px; height: 34px; padding
 /* ---- the snackbar floats like the bubbles: outlined, rounded, clear of the edges */
 #snackbar { background: #3A3128; color: #FFF8EC; border: 2px solid var(--ol); border-radius: var(--r); box-shadow: var(--float); }
 #snackbar.crit { background: #3E2723; }
-@media (max-width: 599px) { #snackbar { left: 8px; right: 8px; margin-bottom: 8px; border-radius: var(--r); } }
+@media (max-width: 599px) { #snackbar { left: calc(8px + var(--safe-left)); right: calc(8px + var(--safe-right)); margin-bottom: 8px; border-radius: var(--r); } }
 
 /* tap-to-explain words: a dotted line under them drawn as a border, which sits in the same place on every WebView
    (text-underline-offset is Chrome 87; without it Chrome 66-86 put Nunito's underline elsewhere) */

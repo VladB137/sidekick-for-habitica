@@ -118,7 +118,8 @@ export function mountStage (container: HTMLElement, o: StageOptions): Stage {
     view.width = f.viewW; view.height = f.viewH;
     applyInsets();
     world.resize(f.viewW, f.viewH);
-    if (frame) draw(); else invalidate();
+    // now, not on the next frame: resizing clears the canvas to black (it has no alpha), and the browser paints before then
+    if (!destroyed && f.viewW > 1) draw();
     update();
   }
 

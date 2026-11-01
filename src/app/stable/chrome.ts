@@ -54,7 +54,7 @@ export interface ChromeHooks {
 /** Mounts are drawn with room around them: in the small round chips they get a bigger box (clipped by the chip). */
 const pictureBox = (id: CreatureId, box: number) => (kindOf(id) === 'mount' ? Math.round(box * 1.5) : box);
 
-/** the thumbnail in art pixels, the Stats card's size (smaller ones crowd the scene's trees); shown scaled down */
+/** the thumbnail in art pixels (smaller ones crowd the scene's trees); shown scaled down */
 const THUMB = { w: 96, h: 54 };
 const thumbs = new Map<string, string>();
 /** A still picture of a scene at this hour and season, kept as an image. */

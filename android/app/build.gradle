@@ -20,8 +20,10 @@ android {
         resValue "string", "title_activity_main", "Sidekick"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        // one version for the whole app: package.json's (Settings shows it too); code = major×10000 + minor×100 + patch
-        versionCode appVersionCode
+        // one version for the whole app: package.json's (Settings shows it too); code = major×10000 + minor×100 + patch.
+        // The code is written out because F-Droid's update check reads it from this line; the check below the android
+        // block refuses a build where it doesn't match package.json.
+        versionCode 10000
         versionName appVersion
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -43,6 +45,12 @@ android {
                 keyPassword 'android'
             }
         }
+    }
+    // no Google-encrypted list of the libraries in the APK's signing block: only Google Play can read it, and
+    // IzzyOnDroid and F-Droid refuse APKs that carry it
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
     // CI runs :app:lintDebug: an error fails the build, warnings are only reported
     lint {
@@ -74,6 +82,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+if (android.defaultConfig.versionCode != appVersionCode) {
+    throw new GradleException("versionCode is ${android.defaultConfig.versionCode} but package.json's ${appVersion} makes ${appVersionCode}: set versionCode ${appVersionCode} in android/app/build.gradle")
 }
 
 repositories {

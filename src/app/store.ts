@@ -658,14 +658,14 @@ export class Store {
   }
 
   private forceMemo = new Map<string, { already: boolean, options: ForceOption[] }>();
-  /** Cheapest ways to make the next roll crit, memoised on everything the search reads. */
+  /** Every way found to make the next roll crit, cheapest first, memoised on everything the search reads. */
   force (roll: RollKey = 'task'): { already: boolean, options: ForceOption[] } | undefined {
     const s = this.state; const inv = this.inventory;
     if (!s || !inv) return undefined;
     const key = JSON.stringify([roll, s, inv.sellables, this.snap?.equipped, this.snap?.owned.length, inv.rewards, inv.targets.map(t => t.value), inv.savingFor, inv.seasonal, inv.allow, inv.allocateTo, inv.badHabits.map(t => t.value), inv.done?.map(t => [t.id, t.value, t.streak, t.checked])]);
     const hit = this.forceMemo.get(key);
     if (hit) return hit;
-    const res = forceOptions(s, inv, roll, { max: 8 });
+    const res = forceOptions(s, inv, roll, { all: true });
     if (this.forceMemo.size > 20) this.forceMemo.clear();
     this.forceMemo.set(key, res);
     return res;

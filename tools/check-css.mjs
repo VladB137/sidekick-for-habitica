@@ -33,9 +33,7 @@ const NEWER = {
   atrules: { container: 105, layer: 99, property: 85 },
 };
 /** single uses that are fine as they are, and why ("selector { property }") */
-const FINE_USES = {
-  '.stable-thumb img { aspect-ratio }': 'the picture itself is 16:9, so its height comes out the same',
-};
+const FINE_USES = {};
 /** at-rules that are fine as they are, and why */
 const FINE_AT = {
   property: "without it the crit reveal's amber circle shows at once instead of growing",

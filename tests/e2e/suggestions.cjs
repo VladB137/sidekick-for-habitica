@@ -1,5 +1,5 @@
 // e2e: Running a suggestion: re-reads, a day change, refusals, 429. Run by tests/e2e.cjs, in order, on its one page: each part starts where the one before it left off.
-module.exports = async ({ STEP_PATH, cardTitle, check, idle, mark, mockLog, page, post, predictions, runFirstOption, score, snackAfter, sync, tab }) => {
+module.exports = async ({ STEP_PATH, cardTitle, check, idle, mark, mockLog, openWays, page, post, predictions, runFirstOption, score, snackAfter, sync, tab }) => {
   let p, m;
   // ------------------------------------------------------------------ 6. a tap in another app, then a suggestion: re-read first, no false alarm
   await tab('Now');
@@ -61,9 +61,8 @@ module.exports = async ({ STEP_PATH, cardTitle, check, idle, mark, mockLog, page
   await tab('Now');
   let tried = false;
   for (let i = 0; i < 6 && !tried; i++) {
-    // the cheapest way shows; the rest open under "Other ways"
-    const more = page.locator('[data-k="more-ways"]');
-    if (await more.count() && /Other ways/.test(await more.textContent())) { await more.click(); await page.waitForTimeout(100); }
+    // the cheapest way's list is open; the others open with a tap
+    await openWays();
     const opts = page.locator('.opt');
     const n = await opts.count();
     for (let j = 0; j < n; j++) {

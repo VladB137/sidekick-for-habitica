@@ -890,7 +890,8 @@ export function mountPlayground (el: HTMLElement, ctx: StableContext): StableSce
     v?.stage.setInsets({ top, bottom });
     // the barn keeps its bar (and its arrow out) in full screen too
     barn?.setInsets(insets.top + BAR_H, insets.bottom);
-    hint.style.top = `${top + 16}px`;
+    // in full screen it starts under the way back (stable-exit, 8 px down, 40 px tall), which it would cover
+    hint.style.top = `${(insets.full ? insets.top + 48 : top) + 16}px`;
   }
 
   // end-to-end builds only: the parts the browser checks look at

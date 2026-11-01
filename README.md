@@ -6,11 +6,11 @@
 
 <p align="center"><a href="#install">Install</a> · <a href="#what-it-does">What it does</a> · <a href="#what-it-never-does">Privacy</a> · <a href="#problems-and-security">Report a problem</a></p>
 
-<p align="center"><img src="docs/screenshots/now.png" width="190" alt="Now: the verdict for the next task in the character's speech bubble"> <img src="docs/screenshots/stable.png" width="190" alt="The Stable: your own pets and mounts in a meadow"> <img src="docs/screenshots/tasks.png" width="190" alt="Tasks"> <img src="docs/screenshots/stats.png" width="190" alt="Stats"></p>
+<p align="center"><img src="docs/screenshots/now.png" width="190" alt="Now: the verdict for the next task in the character's speech bubble"> <img src="docs/screenshots/tasks.png" width="190" alt="Tasks"> <img src="docs/screenshots/stable.png" width="190" alt="The Stable: your own pets and mounts in a meadow"> <img src="docs/screenshots/stats.png" width="190" alt="Stats"></p>
 
 <p align="center"><sub>Screenshots from the app's made-up account (Try it without an account).</sub></p>
 
-See before you tap whether your next task will be a critical hit, and the cheapest honest way to make it one. Works for every class. Or switch crits off and keep the rest: your day at a glance, the warnings that protect it, and a playground where your pets and mounts live.
+See before you tap whether your next task will be a critical hit, and every honest way to make it one, cheapest first. Works for every class. Or switch crits off and keep the rest: your day at a glance, the warnings that protect it, and a playground where your pets and mounts live.
 
 Sidekick for Habitica is an independent, open-source app. It is **not affiliated with or endorsed by Habitica**.
 
@@ -18,7 +18,7 @@ Sidekick for Habitica is an independent, open-source app. It is **not affiliated
 
 Android 9 or newer. The app is English only.
 
-- **[Obtainium](https://github.com/ImranR98/Obtainium)** (recommended): add `https://github.com/VladB137/sidekick-for-habitica`. Obtainium installs the newest release and tells you when there's an update.
+- **[Obtainium](https://github.com/ImranR98/Obtainium)** (recommended): add `https://github.com/VladB137/sidekick-for-habitica`, or [tap here on the phone to add it](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.vladb137.sidekick%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FVladB137%2Fsidekick-for-habitica%22%2C%22author%22%3A%22VladB137%22%2C%22name%22%3A%22Sidekick%20for%20Habitica%22%7D). Obtainium installs the newest release and tells you when there's an update.
 - **By hand:** download the APK from [Releases](https://github.com/VladB137/sidekick-for-habitica/releases/latest) and open it.
 - IzzyOnDroid and F-Droid are planned.
 

@@ -10,7 +10,7 @@
    A full-bleed Teal 700 pager. Swiping is native scroll snapping; the pictures drift a little
    slower than the page where scroll-driven animations exist (compositor only, none with reduced motion). */
 .ob, .mode-choice { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--primary); color: #FFFFFF;
-  padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left); }
 .ob-brand { flex: none; height: 56px; line-height: 56px; padding: 0 16px; font-size: 20px; font-weight: 500; letter-spacing: .0125em; }
 .ob-track { flex: 1; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; outline: none; }
 .ob-track::-webkit-scrollbar { display: none; }
