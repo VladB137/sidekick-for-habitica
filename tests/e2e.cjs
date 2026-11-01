@@ -101,10 +101,18 @@ const STEP_PATH = [[/^Sell/, '/user/sell/'], [/^Buy your reward/, '/score/up'], 
     await idle();
     return { steps, msg };
   };
+  // every folded list of ways to crit on Now, opened (each tap re-renders the card with that list's rows)
+  const openWays = async () => {
+    for (let i = 0; i < 12; i++) {
+      const closed = page.locator('main details.ways-fold:not([open]) > summary');
+      if (!(await closed.count())) break;
+      await closed.first().click(); await page.waitForTimeout(80);
+    }
+  };
   const slideAt = () => page.evaluate(() => Number(document.querySelector('.ob').dataset.slide));
 
   // the parts of the run, in order (tests/e2e/): each one starts where the one before it left off
-  const t = { API, APP, AUTH, CHECKED, ITEMS, SHOTS, STEP_PATH, TOKEN, UID, accountDayPlus, browser, cardTitle, check, ctx, errors, fs, idle, mark, mockLog, mockState, page, post, predictions, runFirstOption, score, slideAt, snackAfter, stableSeen, sync, tab };
+  const t = { API, APP, AUTH, CHECKED, ITEMS, SHOTS, STEP_PATH, TOKEN, UID, accountDayPlus, browser, cardTitle, check, ctx, errors, fs, idle, mark, mockLog, mockState, openWays, page, post, predictions, runFirstOption, score, slideAt, snackAfter, stableSeen, sync, tab };
   for (const part of ['login', 'crits', 'tasks', 'history', 'suggestions', 'day', 'offline', 'screens', 'stable', 'followups', 'classes', 'drops', 'repeats', 'android', 'relaxed', 'demo']) await require(`./e2e/${part}.cjs`)(t);
 
   // ------------------------------------------------------------------ 18. the playground engine (Stable), on its development page

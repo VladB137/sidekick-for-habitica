@@ -6,6 +6,12 @@
 .cost { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
 .opt.conditional { background: var(--hover); }
 .opt.best { background: var(--best-bg); }
+/* each tier's ways fold under its own header, with how many it holds */
+.ways-fold { border-top: 1px solid var(--divider); }
+.ways-fold > summary.fold-summary { padding: 12px 16px; min-height: 48px; box-sizing: border-box; }
+.ways-fold .chev { transition: transform var(--t-medium) var(--ease); color: var(--text-2); }
+.ways-fold[open] > summary .chev { transform: rotate(180deg); }
+.ways-fold > .ways-body > .card-sub { padding-top: 0; }
 /* the new-day button follows the list and stays in reach above the navigation */
 .card.startday { overflow: visible; }
 .startday-actions { position: sticky; bottom: calc(56px + var(--safe-bottom)); background: var(--surface); border-top: 1px solid var(--divider); align-items: center; z-index: 1; }

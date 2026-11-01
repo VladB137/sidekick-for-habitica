@@ -10,7 +10,7 @@
 
 <p align="center"><sub>Screenshots from the app's made-up account (Try it without an account).</sub></p>
 
-See before you tap whether your next task will be a critical hit, and the cheapest honest way to make it one. Works for every class. Or switch crits off and keep the rest: your day at a glance, the warnings that protect it, and a playground where your pets and mounts live.
+See before you tap whether your next task will be a critical hit, and every honest way to make it one, cheapest first. Works for every class. Or switch crits off and keep the rest: your day at a glance, the warnings that protect it, and a playground where your pets and mounts live.
 
 Sidekick for Habitica is an independent, open-source app. It is **not affiliated with or endorsed by Habitica**.
 

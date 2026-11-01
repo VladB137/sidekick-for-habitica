@@ -70,7 +70,8 @@ Add a bullet here when a new check covers something not listed; one bullet per a
 - A read patching the screen in place.
 - Stats friendly first with the workings folded last, its bars adding up to the server’s totals and its dial showing the task crit chance.
 - The closed “How the numbers work” card evenly padded.
-- The cheapest way highlighted first.
+- The cheapest way highlighted first, its list open and the other tiers folded with their counts.
+- Every way to crit listed once its lists are opened (as many as the headers count), every task Tasks marks “sets up crit” among them, and a closed list staying closed through a re-read.
 - Amber chips on Tasks with one marked best.
 - The crit reveal.
 - The anchored menu and Escape.
