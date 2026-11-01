@@ -244,7 +244,7 @@ function banners (): HTMLElement[] {
   if (store.refused) out.push(h('div', { class: 'banner err', role: 'alert' }, icon('block'), h('div', { class: 'li-main' }, `${store.refused} Sidekick has stopped reading by itself.`), button('Retry', doSync, { k: 'retry-refused' })));
   if (store.offline && route !== 'now') out.push(h('div', { class: 'banner offline' }, icon('cloud_off'), h('div', { class: 'li-main' }, `Offline. Numbers from ${fmt.time(store.syncedAt || store.lastServerAt)}; nothing changes until you’re back.`), button('Retry', doSync, { k: 'retry' })));
   const newer = store.newerHabitica;
-  if (newer) out.push(h('div', { class: 'banner warn' }, icon('info'), h('div', { class: 'li-main' }, `Habitica is now on version ${newer}; rules checked against ${RULES.checkedAgainst}. Every prediction is still checked against Habitica’s answer.`), updateLink()));
+  if (newer && newer !== newerDismissed) out.push(newerBanner(newer));
   if (store.drift) out.push(h('div', { class: 'banner warn' }, icon('warning'), h('div', { class: 'li-main' }, 'Two recent predictions didn’t match Habitica. Habitica may have changed a rule — check for a Sidekick update. ', store.lastMismatch ? h('span', { class: 'small muted' }, store.lastMismatch) : null), updateLink()));
   // a repeating To-Do is back: its one-tap Add
   if (route === 'now' || route === 'tasks') out.push(...repeatBanners(route === 'tasks'));
@@ -261,6 +261,21 @@ function banners (): HTMLElement[] {
       `${left} of ${store.api?.rate.limit ?? 30} Habitica requests left this minute${wait ? ` (refills in ${wait} s)` : ''}. Suggestions with several steps wait until then.`)));
   }
   return out;
+}
+
+/**
+ * The newer Habitica, until it is dismissed: Dismiss hides it until the app next starts (memory only, nothing kept),
+ * and a version newer still brings it back. Predictions are checked against Habitica's answers either way.
+ */
+let newerDismissed: string | undefined;
+function newerBanner (newer: string): HTMLElement {
+  // Material's banner: the text across the full width, its actions in a row under it (beside it, the text was squeezed to eight lines)
+  return h('div', { class: 'banner warn', 'data-k': 'newer-habitica' }, icon('info'),
+    h('div', { class: 'li-main' },
+      h('div', null, `Habitica is now on version ${newer}; rules checked against ${RULES.checkedAgainst}. Every prediction is still checked against Habitica’s answer.`),
+      h('div', { class: 'banner-actions' },
+        button('Dismiss', () => { newerDismissed = newer; render(); }, { label: 'Dismiss until Sidekick is opened again', k: 'newer-dismiss' }),
+        updateLink())));
 }
 
 /** On every screen of the made-up account: whose numbers these are, and the way to your own. */
@@ -439,7 +454,11 @@ function leaveStable () {
 /** Hand the Stable's stage (or its absence) to the playground host, with what the chrome covers of it. */
 function syncStableStage () {
   const stage = route === 'stable' ? root.querySelector<HTMLElement>('#stable-stage') : null;
-  syncStable(stage, !!stage && document.visibilityState === 'visible', stableInsets());
+  const insets = stableInsets();
+  // where the playground's bar ends (it sits right under the app bar, whose height varies): main's banners start below it (stable.css)
+  const top = `${insets.top}px`;
+  if (stage && !insets.full && root.style.getPropertyValue('--stable-top') !== top) root.style.setProperty('--stable-top', top);
+  syncStable(stage, !!stage && document.visibilityState === 'visible', insets);
 }
 function stableInsets () {
   const bar = root.querySelector<HTMLElement>('.appbar-top');

@@ -41,6 +41,19 @@ module.exports = async ({ CHECKED, SHOTS, TOKEN, UID, check, idle, mockState, pa
   const newerBanner = page.locator('.banner', { hasText: 'Habitica is now on version 9.0.0' });
   check('newer Habitica version is flagged', await newerBanner.count() > 0);
   check('the banner links to the newest build (a tap, not a call from the app)', /\/releases\//.test(await newerBanner.locator('a', { hasText: 'Get the update' }).getAttribute('href').catch(() => '')));
+  {
+    // Dismiss hides it on every tab until the app starts again (memory only), through a new read; the Stable's part is in stable.cjs
+    const from = await page.getAttribute('.navitem.active', 'aria-label');
+    await tab('Now');
+    await page.click('[data-k="newer-dismiss"]'); await page.waitForTimeout(200);
+    const gone = [await page.locator('[data-k="newer-habitica"]').count()];
+    for (const t of ['Tasks', 'Stats', 'Now']) { await tab(t); gone.push(await page.locator('[data-k="newer-habitica"]').count()); }
+    await sync();
+    gone.push(await page.locator('[data-k="newer-habitica"]').count());
+    const kept = await page.evaluate(() => JSON.stringify(localStorage).includes('newer'));
+    check('newer Habitica: Dismiss hides the banner on every tab, through a new read, and keeps nothing on the device', gone.every(n => n === 0) && !kept, JSON.stringify(gone));
+    await tab(from);
+  }
   await post('/mock/set', { appVersion: CHECKED });
   await sync();
 
