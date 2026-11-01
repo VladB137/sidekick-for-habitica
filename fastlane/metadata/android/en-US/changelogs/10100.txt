@@ -1,0 +1,1 @@
+Now lists every way to crit, each tier in its own folding list. Tabs run Now, Tasks, Stable, and Stats drops the Stable card. The newer-Habitica banner can be dismissed. In landscape the navigation bar and cutouts no longer cover the Stable or dialogs. The Stable tab opens at its final size. Rules checked against Habitica 5.52.0.

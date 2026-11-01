@@ -23,7 +23,7 @@ android {
         // one version for the whole app: package.json's (Settings shows it too); code = major×10000 + minor×100 + patch.
         // The code is written out because F-Droid's update check reads it from this line; the check below the android
         // block refuses a build where it doesn't match package.json.
-        versionCode 10000
+        versionCode 10100
         versionName appVersion
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
