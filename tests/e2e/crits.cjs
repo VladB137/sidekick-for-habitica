@@ -197,12 +197,14 @@ module.exports = async ({ API, SHOTS, cardTitle, check, idle, mark, mockLog, moc
     const calls = (await mockLog()).length;
     // the talk frame by frame
     await page.evaluate(() => {
-      const rec = window.__talk = [];
+      // by the clock, not a count of frames: the frames before the tap count too, and a long line with beats on a slow
+      // runner outlasted 600 of them, ending the record a letter short (2026-11-01)
+      const rec = window.__talk = [], until = performance.now() + 20000;
       const tick = () => {
         const b = document.querySelector('.hero-stage .bubble'); const w = document.querySelector('.talker');
         const t = b && b.querySelector('.said .typed'); const u = b && b.querySelector('.said .untyped');
         rec.push({ h: b ? b.offsetHeight : 0, cls: w ? w.className : '', typed: t ? t.textContent : null, rest: u ? u.textContent : null, hidden: u ? getComputedStyle(u).visibility === 'hidden' : null });
-        if (rec.length < 600 && !document.querySelector('.said:not(.typing)')) requestAnimationFrame(tick);
+        if (performance.now() < until && !document.querySelector('.said:not(.typing)')) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
