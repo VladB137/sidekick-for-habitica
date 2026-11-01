@@ -184,3 +184,8 @@ body.has-snack #app.stable-full .stable-stage ~ .stable-full, body.has-snack #ap
 .pk-where { position: absolute; left: 3px; bottom: 3px; max-width: calc(100% - 6px); padding: 0 4px; border-radius: 7px; background: var(--tag-bg); color: var(--text-2); font-size: 10px; line-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pk-where:empty { display: none; }
 .pk-none { margin: 24px 16px; color: var(--text-2); }
+/* the banners start 8 px under the playground's bar (switcher, tally, picture, picker; 48 px under the app bar's top part, --stable-top
+   from main.ts), which they used to cover. main itself starts under the bare app bar (64 px + outline + safe area) and pads 6 px */
+#app.on-stable main > .banner:first-child { margin-top: calc(var(--stable-top, 67px) + 48px + 8px - 64px - var(--bw) - var(--safe-top) - 6px); }
+/* full screen is the meadow alone: the banners come back with the bars */
+#app.stable-full main > .banner { display: none; }

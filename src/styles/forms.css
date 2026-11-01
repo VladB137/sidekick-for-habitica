@@ -45,3 +45,5 @@
 .check.static { cursor: default; opacity: .6; }
 .check.static::after { display: none; }
 h3.subheader { margin: 0; }
+/* a banner's actions under its text, at the end (Material's banner): text buttons, so the row is no taller than one line */
+.banner-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; margin: 4px -8px -8px 0; }

@@ -1,5 +1,5 @@
 // e2e: The Stable. Run by tests/e2e.cjs, in order, on its one page: each part starts where the one before it left off.
-module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mockState, page, post, snackAfter, stableSeen, sync, tab }) => {
+module.exports = async ({ API, CHECKED, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mockState, page, post, snackAfter, stableSeen, sync, tab }) => {
   // ------------------------------------------------------------------ 14c. the Stable: shifting nav motion, the stage, full screen, Back, none on Stats
   {
     const navW = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.bottomnav .navitem')].map(b => [b.getAttribute('aria-label'), b.getBoundingClientRect().width])));
@@ -150,6 +150,12 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     await page.screenshot({ path: `${SHOTS}/27-stable-full.png` });
     const exitBtn = await page.evaluate(() => { const b = document.querySelector('[data-k="stable-exit"]'), r = b?.getBoundingClientRect(); return b && { label: b.getAttribute('aria-label'), icon: b.querySelector('.icon') && getComputedStyle(b).display, left: r.left, top: r.top, w: r.width, h: r.height, onTop: document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)?.closest('[data-k="stable-exit"]') === b }; });
     check('Stable full screen: a Back button of its own in the top left corner, where the app bar’s was', !!exitBtn && exitBtn.label === 'Back' && exitBtn.left <= 16 && exitBtn.top <= 16 && exitBtn.w === 40 && exitBtn.h === 40 && exitBtn.onTop, JSON.stringify(exitBtn));
+    // #app carries .stable-full too: the full-screen button's look (a 40 px box) once took it along and squeezed main into a strip
+    const fullLayout = await page.evaluate(() => {
+      const app = document.getElementById('app'), main = document.querySelector('main').getBoundingClientRect(), exit = document.querySelector('[data-k="stable-exit"]').getBoundingClientRect();
+      return { app: getComputedStyle(app).position, main: Math.round(main.width), vw: innerWidth, wide: document.documentElement.scrollWidth, hint: parseFloat(document.querySelector('[data-k="stable-hint"]').style.top), exit: exit.bottom };
+    });
+    check('Stable full screen: the page keeps its width (the app isn’t styled as the full-screen button), and the hint starts under the Back button', fullLayout.app !== 'absolute' && fullLayout.main === fullLayout.vw && fullLayout.wide <= fullLayout.vw && fullLayout.hint >= fullLayout.exit, JSON.stringify(fullLayout));
     await page.goBack(); await page.waitForTimeout(400);
     check('Stable full screen: Back leaves full screen, still on the Stable', await page.evaluate(() => !document.getElementById('app').classList.contains('stable-full') && document.querySelector('.bottomnav').getBoundingClientRect().bottom <= innerHeight + 1 && !document.querySelector('.bottomnav').inert && document.querySelector('.navitem.active').getAttribute('aria-label') === 'Stable'));
     const noExit = await page.locator('[data-k="stable-exit"]').count();
@@ -183,6 +189,18 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
       await page.evaluate(() => { const s = document.documentElement.style; s.removeProperty('--safe-area-inset-left'); s.removeProperty('--safe-area-inset-right'); });
       await page.setViewportSize({ width: 412, height: 915 });
       await page.waitForTimeout(600);
+      // a newer Habitica again (still newer than the one dismissed in offline.cjs, so the banner is back): it starts under the
+      // playground's bar, and full screen is the meadow alone
+      await post('/mock/set', { appVersion: '9.0.1' });
+      await sync(); await page.waitForTimeout(300);
+      const at = await page.evaluate(() => { const b = document.querySelector('[data-k="newer-habitica"]')?.getBoundingClientRect(), bar = document.querySelector('[data-k="pg-bar"]').getBoundingClientRect(); return b && { top: Math.round(b.top), bar: Math.round(bar.bottom), h: Math.round(b.height) }; });
+      check('newer Habitica: a still newer version brings the dismissed banner back; on the Stable it sits under the playground’s bar, its text across the width', !!at && at.top >= at.bar && at.top <= at.bar + 16 && at.h < 200, JSON.stringify(at));
+      await page.click('[data-k="stable-full"]'); await page.waitForTimeout(400);
+      const inFull = await page.isVisible('[data-k="newer-habitica"]');
+      await page.goBack(); await page.waitForTimeout(400);
+      check('newer Habitica: full screen is the meadow alone, the banner comes back with the bars', !inFull && await page.isVisible('[data-k="newer-habitica"]'));
+      await post('/mock/set', { appVersion: CHECKED });
+      await sync(); await page.waitForTimeout(300);
     }
     await tab('Settings');
     check('Stable: leaving the screen stops and releases the playground', (await page.evaluate(() => window.__stableLog.slice(-2).join(',') === 'hide,destroy' && !window.__stablePg.stage.running && !window.__stablePg.stage.canvas.isConnected)));
