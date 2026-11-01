@@ -16,7 +16,7 @@ import { companion, petPicture } from '../ui/pet';
 export const OBJ_LABEL: Record<Objective, string> = { damage: 'boss damage', xp: 'XP', gold: 'Gold', drops: 'drop chance' };
 
 /** UI state that must survive re-renders */
-const ui = { moreWays: false, otherSkills: false, classOpen: false };
+const ui = { otherSkills: false, classOpen: false, waysOpen: {} as Record<string, boolean> };
 /** the open "Make it crit" sheet of a skill: closed before its confirmation opens */
 let waysSheet: Sheet | null = null;
 
@@ -157,7 +157,7 @@ const tierOf = (o: ForceOption) => (o.conditional ? 'Only if it really happened'
 
 /** One way to crit. Its tier leads the cost tags; the cheapest way gets the raised button, so the answer looks like one. */
 function optionRow (o: ForceOption, roll: RollKey = 'task', best = false): HTMLElement {
-  return h('div', { class: `opt ${best ? 'best' : ''} ${o.conditional ? 'conditional' : ''} tier-${o.tier}` },
+  return h('div', { class: `opt ${best ? 'best' : ''} ${o.conditional ? 'conditional' : ''} tier-${o.tier}`, 'data-k': `opt-${o.summary}` },
     h('div', { class: 'opt-main' },
       o.steps.length > 1 ? h('ol', null, o.steps.map(st => h('li', null, st.label))) : h('div', { class: 'opt-one' }, o.steps[0].label),
       h('div', { class: 'cost' }, h('span', { class: 'tag tier' }, tierOf(o)), costTags(o).map(c => h('span', { class: 'tag' }, c)))),
@@ -165,33 +165,60 @@ function optionRow (o: ForceOption, roll: RollKey = 'task', best = false): HTMLE
 }
 
 /**
- * The ways to make one roll crit: tasks already done that set it up, then the cheapest way, with the rest folded
- * under "Other ways". Folded, never a last-resort, done-task or only-if-it-happened option first unless nothing else
- * exists. `all` (a skill's sheet) lists every way at once.
+ * One folding list of ways, keyed per roll and list. Open or closed as the player left it this session, else `def`.
+ * On the card (`lazy`) a closed list builds no rows, so a long one costs nothing until it's opened; a sheet isn't
+ * re-rendered, so there every row is built and the fold only hides it.
  */
-function waysToCrit (card: HTMLElement, roll: RollKey, previews: Map<string, TaskPreview>, all = false): boolean {
+function waysFold (k: string, title: string, count: number, def: boolean, lazy: boolean, rows: () => Array<HTMLElement | null>): HTMLElement {
+  const open = ui.waysOpen[k] ?? def;
+  return h('details', {
+    class: 'ways-fold', 'data-k': k, open,
+    on: {
+      toggle: (e: Event) => {
+        const now = (e.currentTarget as HTMLDetailsElement).open;
+        if ((ui.waysOpen[k] ?? def) === now) return;
+        ui.waysOpen[k] = now;
+        if (lazy) store.emit();
+      },
+    },
+  },
+  h('summary', { class: 'subheader fold-summary', 'data-k': `${k}-sum` },
+    h('h3', { class: 'fold-name' }, title), h('span', { class: 'fold-count' }, String(count)), icon('expand_more', 'chev')),
+  open || !lazy ? h('div', { class: 'ways-body' }, rows()) : null);
+}
+
+/** The lists ways fall into, in the order they rank: by tier, then those needing a done task, then the bad habit. */
+const WAY_LISTS: Array<{ k: string, title: string, has: (o: ForceOption) => boolean }> = [
+  ...TIER_LABEL.map((title, tier) => ({ k: `tier${tier}`, title, has: (o: ForceOption) => !o.conditional && !o.ifDone && o.tier === tier })),
+  { k: 'done', title: 'With a task you’ve already done', has: (o: ForceOption) => !o.conditional && o.ifDone },
+  { k: 'cond', title: 'Only if it really happened', has: (o: ForceOption) => o.conditional },
+];
+
+/**
+ * Every way to make one roll crit: tasks already done that set it up, then each tier's ways in its own folding list
+ * (Free, Cheap, Costs something, Last resort, then those needing a done task, then the bad habit), each list in
+ * the engine's order. The cheapest way gets the raised button and its list starts open, never a last-resort,
+ * done-task or only-if-it-happened way unless nothing else exists. `inSheet`: a skill's sheet.
+ */
+function waysToCrit (card: HTMLElement, roll: RollKey, previews: Map<string, TaskPreview>, inSheet = false): boolean {
   const f = store.force(roll);
   const then = roll === 'task' ? 'the task after it crits' : `your next ${skillByKey(roll)?.name} crits`;
-  const setups = openTasks(previews).filter(t => { const p = previews.get(t.id)!; return rollHits(p.after, roll) && rollReady(p.after, roll); }).slice(0, 3);
+  const setups = openTasks(previews).filter(t => { const p = previews.get(t.id)!; return rollHits(p.after, roll) && rollReady(p.after, roll); });
   // a done task alone is the list above; the engine's single done-task option repeats it
   const options = (f?.options || []).filter(o => !(o.ifDone && o.steps.length === 1));
   const easy = options.filter(o => !o.conditional && !o.ifDone && o.tier < 3);
   const best = easy[0] || options[0];
-  const rest = options.filter(o => o !== best);
-  const open = all || ui.moreWays;
+  const lazy = !inSheet;
   if (setups.length) {
-    card.append(
-      h('h3', { class: 'subheader' }, 'Free, if you’ve already done it'),
+    card.append(waysFold(`ways-${roll}-setups`, 'Free, if you’ve already done it', setups.length, true, lazy, () => [
       h('div', { class: 'card-sub' }, `Score one of these first and ${then}.`),
       h('ul', { class: 'list' }, setups.map(t => taskRow(t, previews.get(t.id)!, outcomeText(previews.get(t.id)!), `Then ${then}.`))),
-    );
+    ]));
   }
-  if (best) card.append(h('h3', { class: 'subheader' }, 'Cheapest way'), optionRow(best, roll, true));
-  if (rest.length && open) card.append(h('h3', { class: 'subheader' }, 'Other ways'), ...rest.map(o => optionRow(o, roll)));
-  if (rest.length && !all) {
-    card.append(h('div', { class: 'card-actions start' },
-      button(open ? 'Fewer ways' : `Other ways (${rest.length})`, () => { ui.moreWays = !ui.moreWays; store.emit(); },
-        { icon: open ? 'expand_less' : 'expand_more', k: 'more-ways' })));
+  for (const list of WAY_LISTS) {
+    const ways = options.filter(list.has);
+    if (!ways.length) continue;
+    card.append(waysFold(`ways-${roll}-${list.k}`, list.title, ways.length, ways.includes(best), lazy, () => ways.map(o => optionRow(o, roll, o === best))));
   }
   return setups.length > 0 || options.length > 0;
 }
@@ -203,7 +230,7 @@ function forceCard (previews: Map<string, TaskPreview>): HTMLElement {
   const card = h('div', { class: 'card action' },
     h('div', { class: 'card-head' }, icon('casino'), h('h2', { class: 'card-title' }, 'Make the next task crit')),
     store.live ? null : checkingNote(),
-    h('div', { class: 'card-sub' }, none ? 'No open tasks right now. Ways to make one crit show up once there’s one to score.' : `Chance ${fmt.pct(v.chance)} now. Any of these makes it certain:`),
+    h('div', { class: 'card-sub' }, none ? 'No open tasks right now. Ways to make one crit show up once there’s one to score.' : `Chance ${fmt.pct(v.chance)} now. Any of these makes it certain. Tap a list to open or close it:`),
   );
   if (none) return card;
   if (!waysToCrit(card, 'task', previews)) {

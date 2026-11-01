@@ -13,7 +13,9 @@ module.exports = async ({ SHOTS, TOKEN, UID, check, idle, mockState, page, post,
     const layers = await firstCard.locator('.avatar img').evaluateAll(els => els.map(e => e.getAttribute('src').split('/').pop()));
     check('you card first on Now, with the avatar layered as Habitica draws it', (await firstCard.getAttribute('data-k')) === 'you' && layers.indexOf('skin_915533.png') >= 0 && layers.indexOf('skin_915533.png') < layers.indexOf('head_0.png') && layers[layers.length - 1].startsWith('weapon_'), layers.join(' '));
     check('you card says the XP to the next level', /\d[\d,]* XP to level 25\./.test(await firstCard.textContent()));
-    check('one cheapest way shows, the rest fold under Other ways', (await page.locator('main .opt').count()) === 1 && /Other ways \(\d+\)/.test(await page.locator('[data-k="more-ways"]').textContent().catch(() => '')));
+    // every way is there, each tier folded under its own header; only the cheapest way's list starts open
+    const openLists = await page.locator('main details.ways-fold[open]:has(.opt)').count();
+    check('ways fold by tier: only the cheapest way’s list starts open', openLists === 1 && (await page.locator('main details.ways-fold[open] .opt.best').count()) === 1 && (await page.locator('main details.ways-fold:not([open]) .opt').count()) === 0, `${openLists} open`);
     const row = (await page.locator('.bars').first().textContent()).replace(/\s+/g, ' ');
     const m0 = row.match(/Drops\s*(\d+) \/ (\d+) left/);
     check('drops: Now shows the drops left today', !!m0 && m0[1] === m0[2], row.slice(-60));

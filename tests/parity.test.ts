@@ -13,7 +13,7 @@ import {
   allocatePoint, applyEquip, buyGear, buyPotion, buyReward, buyWithGold, castSkill, critFor, forceOptions, gearFromEquipped, scoreTask,
   revivePreview, sellItem, shouldDo, SKILLS, totals, withGear, RULES, dayChange, dayChangeDanger, skillEffect, skillByKey, smashPlan, gearForTask,
   dropOdds, feedingPlan, type DropAccount, type StableCatalogue,
-  type ClassKey, type GearTable, type Inventory, type RollKey, type State, type StatKey, type Task,
+  type ClassKey, type ForceOption, type GearTable, type Inventory, type RollKey, type State, type StatKey, type Task,
 } from '../src/engine';
 import gearJson from '../src/data/gear.json';
 import itemsJson from '../src/data/items.json';
@@ -306,9 +306,12 @@ function realTask (t: Task, checklistLen = t.checked): any {
 }
 
 // ---------------------------------------------------------------- D. crit-forcing suggestions replayed through the real code
+/** one replayed option: whether the roll crits, and (when it swaps gear) whether putting it back restores the loadout */
+interface Replay { hit: boolean, why: string, restored?: boolean, restoreWhy?: string }
 {
   let promised = 0; let delivered = 0; let states = 0; let already = 0; let noOption = 0; let firstBad = '';
   let restores = 0; let restored = 0; let firstRestoreBad = '';
+  let everyPromised = 0; let everyDelivered = 0; let firstEveryBad = '';
   const dKinds: Record<string, number> = {};
   const M = Math.round(N / 10);
   for (let i = 0; i < M; i++) {
@@ -333,9 +336,8 @@ function realTask (t: Task, checklistLen = t.checked): any {
     const res = forceOptions(c.state, inv, roll, { max: 5 });
     if (res.already) { already++; continue; }
     if (!res.options.length) { noOption++; continue; }
-    for (const opt of res.options) {
-      promised++;
-      for (const k of new Set(opt.kinds.map(k => (k === 'gear' && opt.steps.filter(st => st.kind === 'equip').length > 1 ? 'loadout' : k)))) dKinds[k] = (dKinds[k] || 0) + 1;
+    // one option replayed through Habitica's code: does the roll crit, and does putting swapped gear back restore the loadout
+    const replay = async (opt: ForceOption): Promise<Replay> => {
       const u = JSON.parse(JSON.stringify(c.user, (k, v) => (typeof v === 'function' ? undefined : v)));
       u.addNotification = () => {}; u.markModified = () => {};
       const values = new Map<string, number>(tasks.map(t => [t.id, t.value])); values.set('bad', tasks[0].value);
@@ -386,26 +388,41 @@ function realTask (t: Task, checklistLen = t.checked): any {
       const skill = SKILLS.find(k => k.key === roll);
       if (!err && skill && (u.stats.mp < skill.mana || u.stats.lvl < skill.lvl)) err = 'notEnoughMana for the roll itself';
       const hit = !err && H.crit.crit(u, stat, base) > 1;
-      if (hit) delivered++; else if (!firstBad) firstBad = `#${i} ${roll}: "${opt.summary}" ${err || 'did not crit'}`;
+      const out: Replay = { hit, why: hit ? '' : `#${i} ${roll}: "${opt.summary}" ${err || 'did not crit'}` };
       // putting gear back (the app's restoreGear order and skip rules) must give the original loadout
       const eq = opt.steps.find(st => st.kind === 'equip');
       // (random loadouts can break the two-handed rule, which no real loadout does; those can't be restored exactly)
       const twoHandedBoth = !!ITEMS.gear[c.equipped.weapon]?.[5] && !!c.equipped.shield && !c.equipped.shield.endsWith('_base_0');
       if (eq && eq.kind === 'equip' && !err && !twoHandedBoth) {
-        restores++;
+        out.restored = false;
         for (const k of eq.restore) {
           const on = Object.values(u.items.gear.equipped);
           const todo = k.startsWith('-') ? on.includes(k.slice(1)) : !on.includes(k);
           if (todo) H.equip(u, { params: { type: 'equipped', key: k.replace(/^-/, '') }, language: 'en' });
         }
         const norm = (e: Record<string, string>) => JSON.stringify(Object.fromEntries(SLOTS.map(sl => [sl, e[sl] && !e[sl].endsWith('_base_0') ? e[sl] : ''])));
-        if (norm(u.items.gear.equipped) === norm(c.equipped)) restored++;
-        else if (!firstRestoreBad) firstRestoreBad = `#${i} ${eq.label}: ${norm(c.equipped)} → ${norm(u.items.gear.equipped)}`;
+        if (norm(u.items.gear.equipped) === norm(c.equipped)) out.restored = true;
+        else out.restoreWhy = `#${i} ${eq.label}: ${norm(c.equipped)} → ${norm(u.items.gear.equipped)}`;
       }
+      return out;
+    };
+    for (const opt of res.options) {
+      promised++;
+      for (const k of new Set(opt.kinds.map(k => (k === 'gear' && opt.steps.filter(st => st.kind === 'equip').length > 1 ? 'loadout' : k)))) dKinds[k] = (dKinds[k] || 0) + 1;
+      const r = await replay(opt);
+      if (r.hit) delivered++; else if (!firstBad) firstBad = r.why;
+      if (r.restored !== undefined) { restores++; if (r.restored) restored++; else if (!firstRestoreBad) firstRestoreBad = r.restoreWhy!; }
+    }
+    // every way the app lists (all: true), each replayed the same way
+    for (const opt of forceOptions(c.state, inv, roll, { all: true }).options) {
+      everyPromised++;
+      const r = await replay(opt);
+      if (r.hit && r.restored !== false) everyDelivered++; else if (!firstEveryBad) firstEveryBad = r.why || r.restoreWhy!;
     }
   }
   report('D2 putting swapped gear back restores the original loadout', restored, restores, firstRestoreBad ? `\n      first failure: ${firstRestoreBad}` : '');
   report('D  crit-forcing suggestions replayed through the real code', delivered, promised, `(${states} states: ${already} already crit, ${noOption} with no option) ${JSON.stringify(dKinds)}${firstBad ? `\n      first failure: ${firstBad}` : ''}`);
+  report('D3 every way to crit the app lists, replayed (crit, gear put back)', everyDelivered, everyPromised, firstEveryBad ? `\n      first failure: ${firstEveryBad}` : '');
 }
 
 // ---------------------------------------------------------------- E. the roll itself, every stat and base

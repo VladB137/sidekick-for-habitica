@@ -1,5 +1,5 @@
 // e2e: Forcing a crit, the free gear swap, skills, Brutal Smash. Run by tests/e2e.cjs, in order, on its one page: each part starts where the one before it left off.
-module.exports = async ({ API, SHOTS, cardTitle, check, idle, mark, mockLog, mockState, page, post, predictions, runFirstOption, score, snackAfter, sync, tab }) => {
+module.exports = async ({ API, SHOTS, cardTitle, check, idle, mark, mockLog, mockState, openWays, page, post, predictions, runFirstOption, score, snackAfter, sync, tab }) => {
   // ------------------------------------------------------------------ 1. make the next task crit, score, confirm the server's roll
   for (let round = 0; round < 4; round++) {
     await tab('Now');
@@ -8,8 +8,31 @@ module.exports = async ({ API, SHOTS, cardTitle, check, idle, mark, mockLog, moc
     if ((await cardTitle()) === 'Make the next task crit') {
       // suggestions come free → cheap → costly: each option's tier tag never goes back up, and the first is the raised one
       const card = page.locator('main .card', { has: page.locator('.card-title', { hasText: 'Make the next task crit' }) });
-      const more = card.locator('[data-k="more-ways"]');
-      if (await more.count() && /Other ways/.test(await more.textContent())) { await more.click(); await page.waitForTimeout(100); }
+      if (round === 0) {
+        // each tier folds on its own: only the cheapest way's list starts open (and the done tasks' list), the rest show a count
+        const folds = card.locator('details.ways-fold');
+        const shut = await card.locator('details.ways-fold:not([open])').count();
+        const bestOpen = await card.locator('details.ways-fold[open] .opt.best').count();
+        check('ways to crit: one folding list per tier, the cheapest way’s list open', (await folds.count()) >= 1 && bestOpen === 1, `${await folds.count()} lists, ${shut} closed`);
+        // opened, every list holds as many ways as its header says, all of them listed
+        await openWays();
+        const said = (await card.locator('details.ways-fold > summary .fold-count').allTextContents()).reduce((n, x) => n + Number(x), 0);
+        const shown = (await card.locator('details.ways-fold .opt').count()) + (await card.locator('details.ways-fold [data-k^="did-"]').count());
+        check('ways to crit: every way is listed, as many as the headers count', said > 0 && said === shown, `${said} counted, ${shown} listed`);
+        // every task Tasks marks "sets up crit" is on Now too, not the first three
+        const setupsNow = await card.locator('details.ways-fold [data-k^="did-"]').count();
+        await tab('Tasks');
+        const setupsTasks = await page.locator('.li:not(.notdue):not(.done)', { has: page.locator('.out.setup') }).count();
+        await tab('Now');
+        check('ways to crit: Now lists every task Tasks marks “sets up crit”', setupsNow === setupsTasks, `${setupsNow} on Now, ${setupsTasks} on Tasks`);
+        // a list closed stays closed when the card re-renders
+        const first = card.locator('details.ways-fold').first();
+        await first.locator('summary').click(); await page.waitForTimeout(100);
+        await sync();
+        const stays = !(await card.locator('details.ways-fold').first().getAttribute('open')) && !(await card.locator('details.ways-fold').first().locator('.ways-body').count());
+        check('ways to crit: a closed list stays closed through a re-read, its rows gone', stays);
+        await openWays();
+      } else await openWays();
       const heads = await card.locator('.opt .tag.tier').allTextContents();
       const order = ['Free', 'Cheap', 'Costs something', 'Last resort', 'If you’ve already done it', 'Only if it really happened'];
       const idx = heads.map(x => order.indexOf(x.trim()));
