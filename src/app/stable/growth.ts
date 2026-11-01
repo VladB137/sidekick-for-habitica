@@ -15,7 +15,7 @@
  * what has been announced: a stage reached since is named once, with a sparkle, when the Stable is on screen.
  * The first time the record is made, what has already grown is simply there, unannounced.
  *
- * Pure apart from storage: safe in the main bundle (the Stats card paints the grown scene too).
+ * Pure apart from storage: safe in the main bundle (the intro's meadow paints the grown scene too).
  */
 import {
   GIANT_AT, MAX_PATCHES, MAX_TREES, NO_GROWTH, PATCH_EVERY, TREE_EVERY, TREE_GROWS, STABLE_STAGES, STREAK_ACHIEVEMENT_DAYS, WATER_AT,

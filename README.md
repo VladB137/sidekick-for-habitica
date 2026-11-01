@@ -6,7 +6,7 @@
 
 <p align="center"><a href="#install">Install</a> · <a href="#what-it-does">What it does</a> · <a href="#what-it-never-does">Privacy</a> · <a href="#problems-and-security">Report a problem</a></p>
 
-<p align="center"><img src="docs/screenshots/now.png" width="190" alt="Now: the verdict for the next task in the character's speech bubble"> <img src="docs/screenshots/stable.png" width="190" alt="The Stable: your own pets and mounts in a meadow"> <img src="docs/screenshots/tasks.png" width="190" alt="Tasks"> <img src="docs/screenshots/stats.png" width="190" alt="Stats"></p>
+<p align="center"><img src="docs/screenshots/now.png" width="190" alt="Now: the verdict for the next task in the character's speech bubble"> <img src="docs/screenshots/tasks.png" width="190" alt="Tasks"> <img src="docs/screenshots/stable.png" width="190" alt="The Stable: your own pets and mounts in a meadow"> <img src="docs/screenshots/stats.png" width="190" alt="Stats"></p>
 
 <p align="center"><sub>Screenshots from the app's made-up account (Try it without an account).</sub></p>
 
