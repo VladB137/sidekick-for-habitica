@@ -67,7 +67,7 @@
     "typescript-eslint": "^8.71.2",
     "uuid": "^14.0.2",
     "validator": "^13.15.35",
-    "vite": "^6.0.0"
+    "vite": "^6.4.5"
   },
   "harnessDependencies": "installed on demand by tools/harness/build-harness.mjs",
   "dependencies": {
