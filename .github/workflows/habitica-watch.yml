@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # no write token on disk while Habitica's code runs below; the push step passes it for that one command
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { persist-credentials: false }
       - name: Newest Habitica release
         id: tags
@@ -75,7 +75,7 @@ jobs:
           CHANGED=$(git diff --name-only "$CHECKED" "$LATEST" -- "${FILES[@]}" | tr '\n' ' ')
           echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
           echo "Engine files changed upstream: ${CHANGED:-none}"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.tags.outputs.new == 'true'
         with: { node-version: 20, cache: npm }
       - if: steps.tags.outputs.new == 'true'
@@ -114,7 +114,7 @@ jobs:
 
       - name: Open an issue when a rule moved
         if: steps.parity.outcome == 'failure' || steps.data.outcome == 'failure' || !contains(steps.android.outputs.line, '0.5f')
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

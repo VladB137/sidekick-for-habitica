@@ -18,9 +18,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Node 20 is what Habitica's server runs, so Math.sin here is the reference the sine test compares against
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 20, cache: npm }
       - run: npm ci
       - name: Lint the workflow files (a YAML slip silently disables a workflow)
@@ -45,8 +45,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: 20, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
@@ -56,7 +56,7 @@ jobs:
           git clone --depth 1 --branch "$TAG" https://github.com/HabitRPG/habitica ../habitica
       - run: npm run harness -- ../habitica
       # Chromium 67, the oldest WebView an Android 9 phone can have, for tests/old-webview.cjs (downloaded once, then cached)
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with: { path: ~/.cache/sidekick, key: chromium-550430 }
       - run: VITE_TEST_API=http://127.0.0.1:3001 VITE_AUTO_READ_MS=3000 npx vite build --outDir dist-e2e
       - name: Run the site against a mock Habitica built from Habitica's code
@@ -66,10 +66,10 @@ jobs:
           for _ in $(seq 1 30); do curl -sf http://127.0.0.1:3001/mock/state >/dev/null && curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           node tests/e2e.cjs screenshots
           node --experimental-websocket tests/old-webview.cjs old-webview
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with: { name: e2e-screenshots, path: screenshots }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with: { name: old-webview, path: old-webview }
 
@@ -78,11 +78,11 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # the Capacitor CLI needs Node 22+; the engine's numbers don't depend on the Node version (it carries its own sine)
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 21, cache: gradle }
       - run: npm ci
       - name: Write the shared dev signing key (absent on PRs from forks and Dependabot; the APK then gets a throwaway key)
@@ -112,7 +112,7 @@ jobs:
           node tools/mock-server.mjs --port 3001 --rate 1000 &
           for _ in $(seq 1 30); do curl -sf http://127.0.0.1:3001/mock/state >/dev/null && break; sleep 1; done
           cd android && ./gradlew --no-daemon :verdict:test -PmockUrl=http://127.0.0.1:3001 assembleDebug
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sidekick-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -139,7 +139,7 @@ jobs:
             echo "::error::Add the DEV_KEYSTORE_B64 repository secret (docs/android-testing.md) before the Latest dev build can be published"
             exit 1
           fi
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { name: sidekick-debug-apk }
       - name: Replace the Latest dev build with this commit's APK
         env:
