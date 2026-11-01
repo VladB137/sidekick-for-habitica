@@ -85,6 +85,7 @@ The engine (`src/engine`) is a line-by-line port of Habitica’s own game code. 
 | C. Potion, rewards, gear/quest/seasonal purchases, selling, allocation, equipping | 10,000 | identical |
 | D. Every crit-forcing suggestion replayed through the real code (incl. the server's Stealth check, and the mana a skill roll still needs) | 9,871 (2,000 random players) | 9,871 crits delivered |
 | D2. Putting swapped gear back (incl. two-handed weapons, empty slots and whole sets) | 679 | original loadout restored |
+| D3. Every way to crit the app lists on Now and in the skill sheets (`all: true`), replayed the same way | 29,578 | 29,578 crits delivered, gear put back |
 | E. The crit roll for every stat | 20,000 | identical |
 | F. Reviving: level, Gold, the stat point and the gear piece lost | 5,000 | identical |
 | G. Is a Daily due on a given day (daily/weekly/monthly/yearly, time zones, day start) | 20,000 | identical |
