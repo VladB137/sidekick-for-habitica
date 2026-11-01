@@ -35,9 +35,6 @@
 .sub-title { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 500; margin: 8px 0; }
 .sub-title .icon { color: var(--text-2); font-size: 20px; }
 .sub-sec .table-wrap { margin: 0 -16px; }
-/* the Stable card's still meadow: art pixels kept crisp, scaled to the card */
-.stable-thumb { display: block; width: calc(100% - 32px); margin: 0 16px 12px; padding: 0; border: 0; border-radius: 4px; overflow: hidden; background: var(--divider); cursor: pointer; }
-.stable-thumb img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; }
 /* a game word that explains itself when tapped (ui/term.ts) */
 .term { display: inline; padding: 0; margin: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: help;
   text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: currentColor; }

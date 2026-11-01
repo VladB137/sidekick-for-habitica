@@ -130,7 +130,7 @@ main .card.hue-red, main .card.danger-card, main .card[data-k="streaks"], main .
 main .card.hue-blue, main .card[data-k="class-card"], main .card[data-k="you"], main .card[data-k="stat-bars"], main .card[data-k="numbers"],
 main .card[data-k="history-card"], main .card[data-k="journal"], main .card[data-k="hist-dailies"], main .card[data-k="hist-habits"],
 main .card[data-k="np-lines"], main .card[data-k="np-order"], main .card[data-k="np-widget"], main .card[data-k="phone"] { --cc: var(--h3f); --ccbg: var(--h3); }
-main .card.hue-green, main .card.stable-card, main .card.startday, main .card[data-k="feeding"], main .card[data-k="repeats"] { --cc: var(--h4f); --ccbg: var(--h4); }
+main .card.hue-green, main .card.startday, main .card[data-k="feeding"], main .card[data-k="repeats"] { --cc: var(--h4f); --ccbg: var(--h4); }
 main .card.hue-brown, main .card[data-k="saving"], main .card[data-k="about"] { --cc: var(--h5f); --ccbg: var(--h5); }
 main .card.offline-card { --cc: #FFFFFF; --ccbg: #455A64; }
 .card { background: var(--surface); border-radius: var(--r); border: var(--bw) solid var(--ol); box-shadow: 0 var(--sh) 0 var(--ol); margin: 14px 4px; }

@@ -4,7 +4,6 @@ import { critChance, critMultiplier, RULES, SKILLS, totals, type StatKey } from 
 import { GEAR, ITEMS, purchasable, type SavingFor, type UiTask } from '../model';
 import { gearBuys, type GearBuy, type TaskGoal } from '../../engine/classplan';
 import { OBJ_LABEL } from './now';
-import { stableCard } from './stable';
 import { go } from '../nav';
 import { dailiesOverview, streakRisks, stateDay } from './history';
 import { weekOf } from '../../engine';
@@ -68,7 +67,6 @@ export function statsView (): HTMLElement {
     })) : h('div', { class: 'card-body muted' }, 'Nothing equipped.'),
   ]));
 
-  main.append(stableCard());
   const fc = feedingCard(); if (fc) main.append(fc);
 
   // ---------------------------------------------------------------- items to sell

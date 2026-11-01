@@ -43,7 +43,7 @@ module.exports = async ({ SHOTS, TOKEN, UID, check, ctx, mark, mockLog, mockStat
   const labels = await page.locator('.bottomnav .navitem .lbl').allTextContents();
   const shown = await page.locator('.bottomnav .navitem').evaluateAll(bs => bs.filter(b => Number(getComputedStyle(b.querySelector('.lbl')).opacity) > 0.5).map(b => b.getAttribute('aria-label')));
   const named = await page.locator('.bottomnav .navitem').evaluateAll(bs => bs.every(b => b.getAttribute('aria-label') && b.title === b.getAttribute('aria-label')));
-  check('five tabs, shifting: only the current one shows its label, every one keeps its name', labels.join(',') === 'Now,Stable,Tasks,Stats,Settings' && shown.join(',') === 'Settings' && named, `${labels.join(',')} | shown: ${shown.join(',')}`);
+  check('five tabs, shifting: only the current one shows its label, every one keeps its name', labels.join(',') === 'Now,Tasks,Stable,Stats,Settings' && shown.join(',') === 'Settings' && named, `${labels.join(',')} | shown: ${shown.join(',')}`);
   await page.click('.appbar button[aria-label="Menu"]');
   await page.waitForSelector('.menu.open');
   const items = (await page.locator('.menu.open .menu-item').allTextContents()).map(x => x.trim());

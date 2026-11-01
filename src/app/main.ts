@@ -39,8 +39,8 @@ import { heroCharacter } from './ui/speaker';
 
 const TABS: Array<{ id: Route, label: string, icon: string }> = [
   { id: 'now', label: 'Now', icon: 'bolt' },
-  { id: 'stable', label: 'Stable', icon: 'pets' },
   { id: 'tasks', label: 'Tasks', icon: 'task_alt' },
+  { id: 'stable', label: 'Stable', icon: 'pets' },
   // Plan comes back with the day planner (milestone 3)
   { id: 'stats', label: 'Stats', icon: 'bar_chart' },
   { id: 'settings', label: 'Settings', icon: 'settings' },
@@ -81,8 +81,7 @@ let dayAt = 0;
 /* ---------------------------------------------------------------- navigation
  * Back from any screen goes to the mode's home (Now in Full, the Stable in Relaxed), and Back there leaves the
  * app (Android convention): leaving home pushes one history entry, moving between other screens replaces it.
- * The Stable's full screen pushes one more on top (from the Stable tab or the Stats card), so Back
- * returns to where it was opened. */
+ * The Stable's full screen pushes one more on top, so Back returns to the Stable tab. */
 
 /** where to go once Back has left a sub-screen (navigating away from one goes back first, so Back from the
  * tab it opened from still reaches Now) */

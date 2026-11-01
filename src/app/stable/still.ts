@@ -8,9 +8,7 @@
  * rider is left out on purpose: the avatar's images come from Habitica's image server without CORS and would
  * taint the canvas (the live stage has the same problem, which is why this never copies it).
  *
- * The Stats card's picture is painted the same way, once, at the phone's hour (views/stable.ts).
- *
- * Loaded on demand with the playground: by stable/widget.ts only when a widget is on the home screen, and by the Stats card.
+ * Loaded on demand with the playground: by stable/widget.ts only when a widget is on the home screen.
  */
 import { World, Herd, type Resident } from '../../playground';
 import { AmbientLayer, SceneLayer, WeatherLayer, withProps, ballPicture, type Growth, type MoonPhase, type SceneId, type Season, type TimeOfDay } from '../../playground/scenes';
@@ -46,15 +44,6 @@ export async function paintStills (o: StillOptions): Promise<Record<TimeOfDay, s
   const out = {} as Record<TimeOfDay, string>;
   for (const tod of LIGHTS) out[tod] = paintOne(o, residents, src, tod, new Date(2000, 0, 1, HOUR[tod]), STILL);
   return out;
-}
-
-/** world pixels of the Stats card's picture: 16:9, as wide as the Stable's narrowest world, so creatures stand at the size they have there */
-export const CARD = { w: 480, h: 270 };
-
-/** The Stats card's picture: one PNG at this moment's light and clock (who sleeps now lies down), and how many creatures it shows. */
-export async function paintCard (o: StillOptions & { tod: TimeOfDay, now: Date }): Promise<{ url: string, shown: number }> {
-  const { src, residents } = await sheets(o.residents);
-  return { url: paintOne(o, residents, src, o.tod, o.now, CARD), shown: residents.length };
 }
 
 async function sheets (all: Resident[]) {

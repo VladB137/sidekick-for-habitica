@@ -41,7 +41,7 @@ export function surface (w: number, h: number): Surface {
   const c = document.createElement('canvas'); c.width = w; c.height = h; return c;
 }
 
-/** Paint a scene into a canvas of artW x artH art pixels (a picker thumbnail, the Stats card's still frame). */
+/** Paint a scene into a canvas of artW x artH art pixels (a picker thumbnail, the intro's meadow). */
 export function paintSceneCanvas (artW: number, artH: number, o: SceneLayerOptions & { top?: number, bottom?: number }): { canvas: Surface, layout: SceneLayout } {
   const canvas = surface(artW, artH);
   const g = canvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;

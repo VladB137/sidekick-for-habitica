@@ -16,7 +16,7 @@
 @import './styles/stable.css';                        /* the Stable screen and its controls */
 @import './styles/wide-and-motion.css';               /* wide screens and reduced motion, for every screen */
 @import './styles/notification.css';                  /* Settings → Notification: preview and line list */
-@import './styles/now.css';                           /* Now: avatar, level and bars; Stats bars and dial; folded sections; the Stable card; tap-to-explain words; login extras */
+@import './styles/now.css';                           /* Now: avatar, level and bars; Stats bars and dial; folded sections; tap-to-explain words; login extras */
 @import './styles/intro-modes.css';                   /* intro extras, the mode choice, first-run tips */
 @import './styles/speaker.css';                       /* who talks on Now: Settings' chooser, the meadow header's character */
 @import './styles/polish.css';                        /* polish: numbers, ticks, sparks, pets; folding cards; rows; (i) buttons */

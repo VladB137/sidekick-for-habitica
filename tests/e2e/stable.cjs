@@ -1,6 +1,6 @@
 // e2e: The Stable. Run by tests/e2e.cjs, in order, on its one page: each part starts where the one before it left off.
 module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mockState, page, post, snackAfter, stableSeen, sync, tab }) => {
-  // ------------------------------------------------------------------ 14c. the Stable: shifting nav motion, the stage, full screen, Back, the Stats card
+  // ------------------------------------------------------------------ 14c. the Stable: shifting nav motion, the stage, full screen, Back, none on Stats
   {
     const navW = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.bottomnav .navitem')].map(b => [b.getAttribute('aria-label'), b.getBoundingClientRect().width])));
     const iconY = name => page.evaluate(n => document.querySelector(`.bottomnav [aria-label="${n}"] .icon`).getBoundingClientRect().top, name);
@@ -186,33 +186,12 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     }
     await tab('Settings');
     check('Stable: leaving the screen stops and releases the playground', (await page.evaluate(() => window.__stableLog.slice(-2).join(',') === 'hide,destroy' && !window.__stablePg.stage.running && !window.__stablePg.stage.canvas.isConnected)));
-    // the Stats card opens the Stable full screen; Back returns to Stats
+    // Stats has no Stable card: the Stable is a tab of its own, so nothing on Stats opens it or paints its picture
     await tab('Stats');
-    {
-      // a still picture of the meadow with who lives there: painted once at the world's size (16:9), not blank, kept crisp, no frame loop
-      await page.waitForSelector('[data-k="stable-thumb"][data-shown="2"]', { timeout: 5000 }).catch(() => {});
-      const pic = await page.evaluate(async () => {
-        const img = document.querySelector('[data-k="stable-thumb"]');
-        if (!img) return null;
-        await img.decode().catch(() => {});
-        const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
-        const g = c.getContext('2d'); g.drawImage(img, 0, 0);
-        const d = g.getImageData(0, 0, c.width, c.height).data; const colours = new Set();
-        for (let i = 0; i < d.length; i += 4) colours.add((d[i] << 16) | (d[i + 1] << 8) | d[i + 2]);
-        return { w: img.naturalWidth, h: img.naturalHeight, colours: colours.size, sharp: getComputedStyle(img).imageRendering, canvases: document.querySelectorAll('main canvas').length, shown: img.dataset.shown };
-      });
-      check('Stats card: a still picture of the meadow with its two creatures', !!pic && pic.w === 480 && pic.h === 270 && pic.colours > 12 && pic.sharp === 'pixelated' && pic.canvases === 0 && pic.shown === '2', JSON.stringify(pic));
-      check('Stats card: counts the creatures Habitica has out, before any choice', /Meadow · 2 creatures\./.test(await page.textContent('[data-k="stable-card-sub"]')));
-    }
-    await page.click('[data-k="open-stable"]'); await page.waitForTimeout(400);
-    check('Stats card: opens the Stable full screen', await page.evaluate(() => document.getElementById('app').classList.contains('stable-full') && !!document.querySelector('#stable-stage > canvas.pg-canvas') && /^mount \{.*"full":true/.test(window.__stableLog.slice(-2)[0]) && window.__stableLog.slice(-1)[0] === 'show'));
-    await page.goBack(); await page.waitForTimeout(400);
-    check('Stats card: Back returns to Stats', await page.evaluate(() => document.querySelector('.navitem.active').getAttribute('aria-label') === 'Stats' && !document.getElementById('app').classList.contains('stable-full') && window.__stableLog.slice(-2).join(',') === 'hide,destroy'));
-    await page.click('[data-k="open-stable"]'); await page.waitForTimeout(400);
-    await page.click('[data-k="stable-exit"]'); await page.waitForTimeout(400);
-    check('Stats card: the Stable’s own Back button returns to Stats too', await page.evaluate(() => document.querySelector('.navitem.active').getAttribute('aria-label') === 'Stats' && !document.getElementById('app').classList.contains('stable-full') && window.__stableLog.slice(-2).join(',') === 'hide,destroy'));
+    check('Stats: no Stable card, and nothing on it opens the Stable', await page.evaluate(() => !document.querySelector('[data-k="stable-card"], [data-k="stable-thumb"], [data-k="open-stable"]') && !document.querySelector('main canvas')));
     // the notification's Tasks button while in full screen: Tasks, and Back from there still reaches Now
-    await page.click('[data-k="open-stable"]'); await page.waitForTimeout(400);
+    await tab('Stable'); await page.waitForTimeout(400);
+    await page.click('[data-k="stable-full"]'); await page.waitForTimeout(400);
     await page.evaluate(() => window.__navigate('tasks')); await page.waitForTimeout(500);
     const onTasks = await page.evaluate(() => location.hash === '#tasks' && !document.getElementById('app').classList.contains('stable-full'));
     await page.goBack(); await page.waitForTimeout(400);
@@ -747,8 +726,6 @@ module.exports = async ({ API, ITEMS, SHOTS, UID, check, idle, mark, mockLog, mo
     }
     await page.emulateMedia({ reducedMotion: null });
     await tab('Stats');
-    check('Stats card: names the open playground and how many live there', /Meadow · 1 creature\./.test(await page.textContent('[data-k="stable-card-sub"]')));
-    check('Stats card: after a reload the picture shows who lives there now', !!(await page.waitForSelector('[data-k="stable-thumb"][data-shown="1"]', { timeout: 5000 }).catch(() => null)));
 
     // ---------------------------------------------------------------- 14e. growth: from the account's numbers, named once, never shrinking
     {

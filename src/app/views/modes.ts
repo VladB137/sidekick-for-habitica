@@ -37,7 +37,7 @@ const MARKS: Record<Mode, Mark[]> = {
   full: [
     { at: ['.appbar'], title: 'Amber means go', text: 'Up here is your next task’s verdict. Amber means a fresh read says it crits: act now. While the app is checking, actions wait.' },
     { at: ['main .opt.best', 'main .opt', 'main [data-k^="did-"]'], title: 'One tap, nothing hidden', text: 'Each way to a crit lists exactly what it will do in Habitica, and asks before anything happens.' },
-    { at: ['.bottomnav'], title: 'Everything else', text: 'Your Stable with your pets and mounts, Tasks to tick, Stats and History, and Settings.' },
+    { at: ['.bottomnav'], title: 'Everything else', text: 'Tasks to tick, your Stable with your pets and mounts, Stats and History, and Settings.' },
   ],
   relaxed: [
     { at: ['.appbar-top'], title: 'Your day at a glance', text: 'Up here: Dailies left and the time to your day change. It turns red if the day change would knock you out.' },
