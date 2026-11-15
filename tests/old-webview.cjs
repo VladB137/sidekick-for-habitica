@@ -207,9 +207,10 @@ async function shot (p, canvas = false) {
       await p.evaluate('window.__talkScale = 0.1');
       await click(p, '.hero-stage .talker');
       await sleep(350);
-      // sampled mid-line, outside the short stops after , . ! ? (the bob rests there), which a random line can put at any moment
+      // sampled mid-line, outside the stops after , . ! ? and a line's comic beats (the bob rests there; a beat is 450 ms),
+      // which a random line can put at any moment: wait out a stop by the clock, not by a count of tries
       let mid = null;
-      for (let i = 0; i < 20; i++) {
+      for (const until = Date.now() + 2000; Date.now() < until;) {
         mid = await p.evaluate(`(() => { const t = document.querySelector('.said .typed'), u = document.querySelector('.said .untyped'), w = document.querySelector('.talker'); return t && u ? [t.textContent.length, u.textContent.length, /\\bsay\\b/.test(w.className), getComputedStyle(w.firstElementChild).animationName, getComputedStyle(u).visibility, /\\bpause\\b/.test(w.className)] : null; })()`);
         if (!mid || !mid[5]) break;
         await sleep(15);
