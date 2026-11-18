@@ -104,13 +104,14 @@ const click = (p, sel) => p.evaluate(`(() => { const e = document.querySelector(
 const fill = (p, sel, v) => p.evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); e.focus(); e.value = ${JSON.stringify(v)}; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); e.blur(); })()`);
 
 /** The whole page as one PNG: animations stopped, the Stable's moving canvas hidden (it never paints the same frame twice)
- * unless the screen's canvases are still pictures. The picker's sticky header is held in place (the page is at its top anyway):
- * today's Chromium sometimes draws that layer half a pixel off, smoothing its text and pictures. */
+ * unless the screen's canvases are still pictures. The picker's sticky header is held in place (the page is at its top anyway)
+ * and its row of chosen creatures stops being a scroller (it is scrolled to its start anyway): today's Chromium gives each its
+ * own layer and sometimes draws that layer half a pixel off, smoothing its text and pictures (seen on CI's runners, 0.26%). */
 async function shot (p, canvas = false) {
   await p.evaluate(`(() => {
     let s = document.getElementById('__still');
     if (!s) { s = document.createElement('style'); s.id = '__still'; document.head.appendChild(s); }
-    s.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; } .pk-top { position: relative !important; }${canvas ? '' : ' canvas { visibility: hidden !important; }'}';
+    s.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; } .pk-top { position: relative !important; } .pk-chips { overflow: hidden !important; }${canvas ? '' : ' canvas { visibility: hidden !important; }'}';
     window.scrollTo(0, 0);
   })()`);
   await sleep(300);
