@@ -29,6 +29,12 @@ jobs:
           CHECKED=$(sed -n "s/.*checkedAgainst: '\([^']*\)'.*/\1/p" src/engine/rules.ts)
           NEWEST=$(printf '%s\n%s\n' "$LATEST" "$CHECKED" | sort -V | tail -1)
           if [ -n "$LATEST" ] && [ "$LATEST" != "$CHECKED" ] && [ "$NEWEST" = "$LATEST" ]; then NEW=true; else NEW=false; fi
+          # a branch for this release already waits for its PR: pushing again would replace its commit, and a push
+          # with the workflow token starts no CI, so the PR would lose its checks
+          if [ "$NEW" = true ] && [ -n "$(git ls-remote --heads origin "habitica-$LATEST")" ]; then
+            NEW=false
+            echo "habitica-$LATEST is already pushed and waiting for its PR"
+          fi
           {
             echo "latest=$LATEST"
             echo "checked=$CHECKED"
